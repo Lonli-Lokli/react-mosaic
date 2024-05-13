@@ -1,6 +1,6 @@
 {
   "name": "react-mosaic-component2",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "description": "A React Tiling Window Manager",
   "license": "Apache-2.0",
   "main": "./lib/cjs/index.js",
@@ -9,12 +9,11 @@
   "exports": {
     ".": {
       "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js",
-      "default": "./lib/cjs/index.js"
+      "require": "./lib/cjs/index.js"
     },
-    "*.css": {
-      "import": "./*.css",
-      "require": "./*.css"
+    "./react-mosaic-component.css": {
+      "import": "./react-mosaic-component.css",
+      "require": "./react-mosaic-component.css"
     }
   },
   "style": "./react-mosaic-component.css",
