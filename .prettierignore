@@ -1,0 +1,10 @@
+# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/.nx/cache
+/.nx/workspace-data
+/.circleci
+/.github
+/.idea
+/.parcel-cache
+/.tsup
