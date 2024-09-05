@@ -7,7 +7,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": ["dom", "es2017", "scripthost", "es2015.promise"],
+    "lib": ["dom", "scripthost"],
     "moduleResolution": "node",
     "module": "ESNext",
     "noFallthroughCasesInSwitch": true,
