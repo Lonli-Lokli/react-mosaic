@@ -14,7 +14,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "target": "ES2015",
+    "target": "ES2017",
     "skipLibCheck": true,
     "baseUrl": ".",
     "sourceMap": true,

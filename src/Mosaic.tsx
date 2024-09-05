@@ -82,7 +82,7 @@ export interface MosaicUncontrolledProps<T extends MosaicKey> extends MosaicBase
 
 export type MosaicProps<T extends MosaicKey> = MosaicControlledProps<T> | MosaicUncontrolledProps<T>;
 
-function isUncontrolled<T extends MosaicKey>(props: MosaicProps<T>): props is MosaicUncontrolledProps<T> {
+function isUncontrolled<T extends MosaicKey>(props: MosaicProps<T>): props is Readonly<MosaicUncontrolledProps<T>> {
   return (props as MosaicUncontrolledProps<T>).initialValue != null;
 }
 

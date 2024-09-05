@@ -1,7 +1,7 @@
-import { expect } from 'chai';
 import max from 'lodash/max';
 import min from 'lodash/min';
 import range from 'lodash/range';
+import { expect, describe, it } from 'vitest';
 
 import { getNodeAtPath, MosaicNode } from '../src/index';
 import {
