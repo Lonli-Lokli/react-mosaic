@@ -14,4 +14,5 @@ jobs:
       - run: yarn test
       - uses: JS-DevTools/npm-publish@v3
         with:
+          package: lib
           token: ${{ secrets.NPM_TOKEN }}
