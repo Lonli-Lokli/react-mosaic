@@ -1,5 +1,5 @@
+import { describe, expect, it } from 'vitest';
 import { BoundingBox } from '../src/util/BoundingBox';
-import { expect, describe, it } from 'vitest';
 
 // Yay javascript float precision
 function expectBoundingBoxCloseTo(a: BoundingBox, b: BoundingBox, delta: number = 0.000001) {

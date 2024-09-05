@@ -7,7 +7,7 @@ import { DefaultToolbarButton, MosaicButtonProps } from './MosaicButton';
 
 export class ExpandButton extends React.PureComponent<MosaicButtonProps> {
   static contextType = MosaicWindowContext;
-  declare context: React.ContextType<typeof MosaicWindowContext>
+  declare context: React.ContextType<typeof MosaicWindowContext>;
 
   render() {
     return (

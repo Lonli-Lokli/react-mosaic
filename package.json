@@ -46,7 +46,7 @@
     "prettier:run": "prettier \"styles/*.less\" \"*.md\" \"{,.}*.yml\" \".circleci/*.yml\"",
     "test": "npm-run-all build -lp test:**",
     "test:lint": "tslint -c tslint.yml -p tsconfig.json -e test",
-    "test:unit": "vitest",
+    "test:unit": "vitest run",
     "fix": "npm-run-all -lp fix:**",
     "fix:format": "yarn run prettier:run --write",
     "fix:lint": "yarn run test:lint --fix",

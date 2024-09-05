@@ -82,7 +82,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     renderToolbar: null,
   };
   static contextType = MosaicContext;
-  declare context: React.ContextType<typeof MosaicContext>
+  declare context: React.ContextType<typeof MosaicContext>;
 
   state: InternalMosaicWindowState = {
     additionalControlsOpen: false,

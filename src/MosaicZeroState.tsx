@@ -12,7 +12,7 @@ export interface MosaicZeroStateProps<T extends MosaicKey> {
 
 export class MosaicZeroState<T extends MosaicKey> extends React.PureComponent<MosaicZeroStateProps<T>> {
   static contextType = MosaicContext;
-  declare context: React.ContextType<typeof MosaicContext>
+  declare context: React.ContextType<typeof MosaicContext>;
 
   render() {
     return (
