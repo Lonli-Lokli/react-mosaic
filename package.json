@@ -1,16 +1,16 @@
 {
   "name": "react-mosaic-component2",
-  "version": "6.7.0",
+  "version": "6.8.0",
   "description": "A React Tiling Window Manager",
   "license": "Apache-2.0",
-  "main": "./dist/esm/index.js",
+  "main": "./index.js",
   "type": "module",
   "exports": {
     "./react-mosaic-component.css": "./react-mosaic-component.css",
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.cjs"
+      "import": "./index.js",
+      "default": "./index.cjs"
     }
   },
   "style": "./react-mosaic-component.css",
@@ -63,7 +63,6 @@
   "devDependencies": {
     "@blueprintjs/core": "^4.15.1",
     "@blueprintjs/icons": "^4.13.1",
-    "@microsoft/api-extractor": "^7.47.7",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@types/classnames": "^2.3.1",
     "@types/dom4": "^2.0.2",

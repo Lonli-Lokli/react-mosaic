@@ -245,6 +245,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
   };
 
   private readonly childContext: MosaicWindowContext = {
+    // @ts-ignore
     blueprintNamespace: this.context.blueprintNamespace,
     mosaicWindowActions: {
       split: this.split,
