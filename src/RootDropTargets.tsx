@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import values from 'lodash/values';
+import values from 'lodash-es/values';
 import React from 'react';
 import { useDrop } from 'react-dnd';
 

@@ -1,6 +1,6 @@
-import max from 'lodash/max';
-import min from 'lodash/min';
-import range from 'lodash/range';
+import max from 'lodash-es/max';
+import min from 'lodash-es/min';
+import range from 'lodash-es/range';
 import { describe, expect, it } from 'vitest';
 
 import { getNodeAtPath, MosaicNode } from '../src/index';

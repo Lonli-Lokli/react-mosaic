@@ -1,10 +1,11 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
+  bundle: true,
   entryPoints: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   outDir: 'lib',
-  target: ['es2017', 'node16'],
+  platform: 'neutral',
   clean: false,
 });

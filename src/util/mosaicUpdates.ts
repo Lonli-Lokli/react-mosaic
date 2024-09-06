@@ -1,10 +1,10 @@
 import update from 'immutability-helper';
-import drop from 'lodash/drop';
-import dropRight from 'lodash/dropRight';
-import isEqual from 'lodash/isEqual';
-import last from 'lodash/last';
-import set from 'lodash/set';
-import take from 'lodash/take';
+import drop from 'lodash-es/drop';
+import dropRight from 'lodash-es/dropRight';
+import isEqual from 'lodash-es/isEqual';
+import last from 'lodash-es/last';
+import set from 'lodash-es/set';
+import take from 'lodash-es/take';
 import { MosaicDropTargetPosition } from '../internalTypes';
 import {
   MosaicBranch,

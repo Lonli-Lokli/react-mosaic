@@ -1,5 +1,5 @@
-import clone from 'lodash/clone';
-import get from 'lodash/get';
+import clone from 'lodash-es/clone';
+import get from 'lodash-es/get';
 import { MosaicBranch, MosaicDirection, MosaicKey, MosaicNode, MosaicParent, MosaicPath } from '../types';
 
 function alternateDirection<T extends MosaicKey>(

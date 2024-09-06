@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import defer from 'lodash/defer';
-import dropRight from 'lodash/dropRight';
-import isEmpty from 'lodash/isEmpty';
-import isEqual from 'lodash/isEqual';
-import values from 'lodash/values';
+import defer from 'lodash-es/defer';
+import dropRight from 'lodash-es/dropRight';
+import isEmpty from 'lodash-es/isEmpty';
+import isEqual from 'lodash-es/isEqual';
+import values from 'lodash-es/values';
 import React, { useContext } from 'react';
 import {
   ConnectDragPreview,

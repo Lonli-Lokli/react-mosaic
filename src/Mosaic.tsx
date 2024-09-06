@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { DragDropManager } from 'dnd-core';
-import countBy from 'lodash/countBy';
-import keys from 'lodash/keys';
-import pickBy from 'lodash/pickBy';
+import countBy from 'lodash-es/countBy';
+import keys from 'lodash-es/keys';
+import pickBy from 'lodash-es/pickBy';
 import { HTML5toTouch } from 'rdndmb-html5-to-touch';
 import React from 'react';
 import { DndProvider } from 'react-dnd';
