@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useContext, ReactElement } from 'react';
+import React, { useContext } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { MosaicContext } from './contextTypes';
