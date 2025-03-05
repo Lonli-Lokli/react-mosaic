@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useContext } from 'react';
+import React, { useContext, ReactElement } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { MosaicContext } from './contextTypes';
@@ -29,7 +29,7 @@ export function MosaicDropTarget({ path, position }: MosaicDropTargetProps) {
   });
   return (
     <div
-      ref={connectDropTarget}
+      ref={element => connectDropTarget(element)}
       className={classNames('drop-target', position, {
         'drop-target-hover': isOver && draggedMosaicId === mosaicId,
       })}

@@ -16,7 +16,7 @@ The best way to see it is a simple [**Demo**](https://nomcopter.github.io/react-
 ## Usage
 
 The core of react-mosaic's operations revolve around the simple binary tree [specified by `MosaicNode<T>`](./src/types.ts#L12).
-[`T`](./src/types.ts#L7) is the type of the leaves of the tree and is a `string` or a `number` that can be resolved to a `JSX.Element` for display.
+[`T`](./src/types.ts#L7) is the type of the leaves of the tree and is a `string` or a `number` that can be resolved to a `ReactElement` for display.
 
 ### Installation
 
@@ -69,7 +69,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 
 import './app.css';
 
-const ELEMENT_MAP: { [viewId: string]: JSX.Element } = {
+const ELEMENT_MAP: { [viewId: string]: ReactElement } = {
   a: <div>Left Window</div>,
   b: <div>Top Right Window</div>,
   c: <div>Bottom Right Window</div>,
@@ -94,7 +94,7 @@ export const app = (
 );
 ```
 
-`renderTile` is a stateless lookup function to convert `T` into a displayable `JSX.Element`.
+`renderTile` is a stateless lookup function to convert `T` into a displayable `ReactElement`.
 By default `T` is `string` (so to render one element `initialValue="ID"` works).
 `T`s must be unique within an instance of `Mosaic`, they are used as keys for [React list management](https://reactjs.org/docs/lists-and-keys.html).
 `initialValue` is a [`MosaicNode<T>`](./src/types.ts#L12).
@@ -168,7 +168,7 @@ for a more interesting example that shows the usage of Mosaic as a controlled co
 ```typescript
 export interface MosaicBaseProps<T extends MosaicKey> {
   /**
-   * Lookup function to convert `T` to a displayable `JSX.Element`
+   * Lookup function to convert `T` to a displayable `ReactElement`
    */
   renderTile: TileRenderer<T>;
   /**
@@ -193,7 +193,7 @@ export interface MosaicBaseProps<T extends MosaicKey> {
    * View to display when the current value is `null`
    * default: Simple NonIdealState view
    */
-  zeroStateView?: JSX.Element;
+  zeroStateView?: ReactElement;
   /**
    * Override the mosaicId passed to `react-dnd` to control how drag and drop works with other components
    * Note: does not support updating after instantiation
@@ -273,11 +273,11 @@ export interface MosaicWindowProps<T extends MosaicKey> {
   /**
    * Optional method to override the displayed preview when a user drags a window
    */
-  renderPreview?: (props: MosaicWindowProps<T>) => JSX.Element;
+  renderPreview?: (props: MosaicWindowProps<T>) => ReactElement;
   /**
    * Optional method to override the displayed toolbar
    */
-  renderToolbar?: ((props: MosaicWindowProps<T>, draggable: boolean | undefined) => JSX.Element) | null;
+  renderToolbar?: ((props: MosaicWindowProps<T>, draggable: boolean | undefined) => ReactElement) | null;
   /**
    * Optional listener for when the user begins dragging the window
    */

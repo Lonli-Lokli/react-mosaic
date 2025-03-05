@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { defer, dropRight, isEmpty, isEqual, values } from 'lodash-es';
-import React, { useContext } from 'react';
+import React, { useContext, ReactElement } from 'react';
 import {
   ConnectDragPreview,
   ConnectDragSource,
@@ -32,8 +32,8 @@ export interface MosaicWindowProps<T extends MosaicKey> {
   disableAdditionalControlsOverlay?: boolean;
   draggable?: boolean;
   createNode?: CreateNode<T>;
-  renderPreview?: (props: MosaicWindowProps<T>) => JSX.Element;
-  renderToolbar?: ((props: MosaicWindowProps<T>, draggable: boolean | undefined) => JSX.Element) | null;
+  renderPreview?: (props: MosaicWindowProps<T>) => ReactElement;
+  renderToolbar?: ((props: MosaicWindowProps<T>, draggable: boolean | undefined) => ReactElement) | null;
   onDragStart?: () => void;
   onDragEnd?: (type: 'drop' | 'reset') => void;
 }
