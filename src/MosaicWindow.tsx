@@ -106,7 +106,9 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
               'drop-target-hover': isOver && draggedMosaicId === this.context.mosaicId,
               'additional-controls-open': this.state.additionalControlsOpen,
             })}
-            ref={(element) => (this.rootElement = element)}
+            ref={(element) => {
+              this.rootElement = element;
+            }}
           >
             {this.renderToolbar()}
             <div className="mosaic-window-body">{this.props.children}</div>
