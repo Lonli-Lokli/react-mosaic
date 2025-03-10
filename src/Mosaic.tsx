@@ -223,6 +223,7 @@ export class Mosaic<T extends MosaicKey = string> extends React.PureComponent<Mo
       <DndProvider
         backend={MultiBackend}
         options={HTML5toTouch}
+        context={window}
         {...(this.props.dragAndDropManager && { manager: this.props.dragAndDropManager })}
       >
         <MosaicWithoutDragDropContext<T> {...this.props} />
