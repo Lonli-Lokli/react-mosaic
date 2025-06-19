@@ -120,7 +120,11 @@ const TITLE_MAP: Record<ViewId, string> = {
 export const app = (
   <Mosaic<ViewId>
     renderTile={(id, path) => (
-      <MosaicWindow<ViewId> path={path} createNode={() => 'new'} title={TITLE_MAP[id]}>
+      <MosaicWindow<ViewId>
+        path={path}
+        createNode={() => 'new'}
+        title={TITLE_MAP[id]}
+      >
         <h1>{TITLE_MAP[id]}</h1>
       </MosaicWindow>
     )}
@@ -212,7 +216,8 @@ export interface MosaicBaseProps<T extends MosaicKey> {
   dragAndDropManager?: DragDropManager | undefined;
 }
 
-export interface MosaicControlledProps<T extends MosaicKey> extends MosaicBaseProps<T> {
+export interface MosaicControlledProps<T extends MosaicKey>
+  extends MosaicBaseProps<T> {
   /**
    * The tree to render
    */
@@ -220,14 +225,17 @@ export interface MosaicControlledProps<T extends MosaicKey> extends MosaicBasePr
   onChange: (newNode: MosaicNode<T> | null) => void;
 }
 
-export interface MosaicUncontrolledProps<T extends MosaicKey> extends MosaicBaseProps<T> {
+export interface MosaicUncontrolledProps<T extends MosaicKey>
+  extends MosaicBaseProps<T> {
   /**
    * The initial tree to render, can be modified by the user
    */
   initialValue: MosaicNode<T> | null;
 }
 
-export type MosaicProps<T extends MosaicKey> = MosaicControlledProps<T> | MosaicUncontrolledProps<T>;
+export type MosaicProps<T extends MosaicKey> =
+  | MosaicControlledProps<T>
+  | MosaicUncontrolledProps<T>;
 ```
 
 #### `MosaicWindow`
@@ -277,7 +285,12 @@ export interface MosaicWindowProps<T extends MosaicKey> {
   /**
    * Optional method to override the displayed toolbar
    */
-  renderToolbar?: ((props: MosaicWindowProps<T>, draggable: boolean | undefined) => ReactElement) | null;
+  renderToolbar?:
+    | ((
+        props: MosaicWindowProps<T>,
+        draggable: boolean | undefined,
+      ) => ReactElement)
+    | null;
   /**
    * Optional listener for when the user begins dragging the window
    */
@@ -353,7 +366,8 @@ export interface MosaicRootActions<T extends MosaicKey> {
 Children (and toolbar elements) within `MosaicWindow` are passed the following additional functions on context.
 
 ```typescript
-export interface MosaicWindowContext<T extends MosaicKey> extends MosaicContext<T> {
+export interface MosaicWindowContext<T extends MosaicKey>
+  extends MosaicContext<T> {
   mosaicWindowActions: MosaicWindowActions;
 }
 
@@ -382,7 +396,9 @@ export interface MosaicWindowActions {
   /**
    * Enables connecting a different drag source besides the react-mosaic toolbar
    */
-  connectDragSource: (connectedElements: React.ReactElement<any>) => React.ReactElement<any>;
+  connectDragSource: (
+    connectedElements: React.ReactElement<any>,
+  ) => React.ReactElement<any>;
 }
 ```
 

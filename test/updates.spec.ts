@@ -1,123 +1,198 @@
 import { describe, expect, it } from 'vitest';
 import { getNodeAtPath, MosaicNode } from '../src/index';
 import { MosaicDropTargetPosition } from '../src/internalTypes';
-import { MosaicParent, MosaicPath } from '../src/types';
-import { createDragToUpdates, createRemoveUpdate, updateTree } from '../src/util/mosaicUpdates';
+// Import the new n-ary types
+import { MosaicPath, MosaicSplitNode, MosaicTabsNode } from '../src/types';
+import {
+  createDragToUpdates,
+  createRemoveUpdate,
+  updateTree,
+} from '../src/util/mosaicUpdates';
 
-const MEDIUM_TREE: MosaicNode<number> = {
+// The test tree converted to the new n-ary format
+const NARY_MEDIUM_TREE: MosaicNode<number> = {
+  type: 'split',
   direction: 'row',
-  first: 1,
-  second: {
-    direction: 'column',
-    first: {
+  children: [
+    1,
+    {
+      type: 'split',
       direction: 'column',
-      first: 2,
-      second: 3,
+      children: [
+        {
+          type: 'split',
+          direction: 'column',
+          children: [2, 3],
+        },
+        4,
+      ],
     },
-    second: 4,
-  },
+  ],
 };
 
 describe('mosaicUpdates', () => {
   describe('updateTree', () => {
-    const simpleUpdatedTree = updateTree(MEDIUM_TREE, [
+    // Paths are now numeric arrays
+    const simpleUpdatedTree = updateTree(NARY_MEDIUM_TREE, [
       {
-        path: ['first'],
+        path: [0], // was ['first']
         spec: {
           $set: 5,
         },
       },
     ]);
+
     it('should apply update', () => {
-      expect(getNodeAtPath(simpleUpdatedTree, ['first'])).to.equal(5);
+      expect(getNodeAtPath(simpleUpdatedTree, [0])).to.equal(5);
     });
+
     it('roots should not be reference equal', () => {
-      expect(simpleUpdatedTree).to.not.equal(MEDIUM_TREE);
+      expect(simpleUpdatedTree).to.not.equal(NARY_MEDIUM_TREE);
     });
+
     it('unchanged nodes should be reference equal', () => {
-      const path: MosaicPath = ['second'];
-      expect(getNodeAtPath(simpleUpdatedTree, path)).to.equal(getNodeAtPath(MEDIUM_TREE, path));
+      const path: MosaicPath = [1]; // was ['second']
+      expect(getNodeAtPath(simpleUpdatedTree, path)).to.equal(
+        getNodeAtPath(NARY_MEDIUM_TREE, path),
+      );
     });
   });
+
   describe('createRemoveUpdate', () => {
-    it('should fail on null', () => {
-      expect(() => createRemoveUpdate(MEDIUM_TREE, ['first', 'first'])).to.throw(Error);
+    it('should fail on a path that leads to a leaf partway through', () => {
+      // Path [0, 0] is invalid because node at [0] is leaf '1'
+      expect(() => createRemoveUpdate(NARY_MEDIUM_TREE, [0, 0])).to.throw(
+        Error,
+      );
     });
-    it('should remove leaf', () => {
-      const updatedTree = updateTree(MEDIUM_TREE, [createRemoveUpdate(MEDIUM_TREE, ['second', 'second'])]);
-      expect(getNodeAtPath(updatedTree, ['second'])).to.equal(getNodeAtPath(MEDIUM_TREE, ['second', 'first']));
+
+    it('should remove a leaf and collapse its parent', () => {
+      // Path to node '4' is [1, 1]
+      const updatedTree = updateTree(NARY_MEDIUM_TREE, [
+        createRemoveUpdate(NARY_MEDIUM_TREE, [1, 1]),
+      ]);
+      // The parent at path [1] should now be replaced by its single remaining child (which was at [1, 0])
+      expect(getNodeAtPath(updatedTree, [1])).to.deep.equal(
+        getNodeAtPath(NARY_MEDIUM_TREE, [1, 0]),
+      );
     });
+
     it('should fail to remove root', () => {
-      expect(() => updateTree(MEDIUM_TREE, [createRemoveUpdate(MEDIUM_TREE, [])])).to.throw(Error);
+      expect(() =>
+        updateTree(NARY_MEDIUM_TREE, [
+          createRemoveUpdate(NARY_MEDIUM_TREE, []),
+        ]),
+      ).to.throw(Error);
     });
+
     it('should fail to remove non-existant node', () => {
-      expect(() => updateTree(MEDIUM_TREE, [createRemoveUpdate(MEDIUM_TREE, ['first', 'first'])])).to.throw(Error);
+      expect(() =>
+        updateTree(NARY_MEDIUM_TREE, [
+          createRemoveUpdate(NARY_MEDIUM_TREE, [0, 0]),
+        ]),
+      ).to.throw(Error);
     });
   });
+
   describe('createDragToUpdates', () => {
-    describe('drag leaf to unrelated leaf', () => {
+    describe('drag leaf to unrelated leaf to create a SPLIT', () => {
       const updatedTree = updateTree(
-        MEDIUM_TREE,
+        NARY_MEDIUM_TREE,
         createDragToUpdates(
-          MEDIUM_TREE,
-          ['second', 'first', 'second'],
-          ['second', 'second'],
+          NARY_MEDIUM_TREE,
+          [1, 0, 1], // Path to '3'
+          [1, 1], // Path to '4'
           MosaicDropTargetPosition.RIGHT,
         ),
       );
-      it('should remove sourceNode', () => {
-        expect(getNodeAtPath(updatedTree, ['second', 'first', 'second'])).to.equal(null);
-      });
+
       it('should make source parent a leaf', () => {
-        expect(getNodeAtPath(updatedTree, ['second', 'first'])).to.equal(2);
+        // Parent of '3' (at [1, 0]) now becomes just '2'
+        expect(getNodeAtPath(updatedTree, [1, 0])).to.equal(2);
       });
-      it('source should be in destination', () => {
-        expect(getNodeAtPath(updatedTree, ['second', 'second', 'second'])).to.equal(3);
+
+      it('should place source in a new split at the destination', () => {
+        // The new path for '3' is inside the new split, at the 2nd position
+        expect(getNodeAtPath(updatedTree, [1, 1, 1])).to.equal(3);
       });
-      it('destination should be a sibling', () => {
-        expect(getNodeAtPath(updatedTree, ['second', 'second', 'first'])).to.equal(4);
+
+      it('destination should be a sibling in the new split', () => {
+        // Original '4' is now at the 1st position
+        expect(getNodeAtPath(updatedTree, [1, 1, 0])).to.equal(4);
       });
-      it('direction should be correct', () => {
-        expect((getNodeAtPath(updatedTree, ['second', 'second']) as MosaicParent<number>).direction).to.equal('row');
+
+      it('direction of the new split should be correct', () => {
+        // The new parent at [1, 1] is a split node
+        const newParent = getNodeAtPath(
+          updatedTree,
+          [1, 1],
+        ) as MosaicSplitNode<number>;
+        expect(newParent.type).to.equal('split');
+        expect(newParent.direction).to.equal('row');
       });
     });
-    describe('drag leaf to unrelated parent', () => {
+
+    describe('drag leaf to unrelated leaf to create TABS', () => {
       const updatedTree = updateTree(
-        MEDIUM_TREE,
-        createDragToUpdates(MEDIUM_TREE, ['first'], ['second', 'first'], MosaicDropTargetPosition.TOP),
+        NARY_MEDIUM_TREE,
+        createDragToUpdates(
+          NARY_MEDIUM_TREE,
+          [1, 0, 1], // Path to '3'
+          [1, 1], // Path to '4'
+          MosaicDropTargetPosition.CENTER, // Drop in the center to create a tab group
+        ),
       );
-      it('should remove sourceNode', () => {
-        expect(getNodeAtPath(updatedTree, ['first'])).to.not.equal(1);
+
+      it('should make source parent a leaf', () => {
+        // Parent of '3' (at [1, 0]) now becomes just '2'
+        expect(getNodeAtPath(updatedTree, [1, 0])).to.equal(2);
       });
-      it('source should be in destination', () => {
-        expect(getNodeAtPath(updatedTree, ['first', 'first'])).to.equal(1);
+
+      it('destination should become a tab group', () => {
+        const newParent = getNodeAtPath(
+          updatedTree,
+          [1, 1],
+        ) as MosaicTabsNode<number>;
+        expect(newParent.type).to.equal('tabs');
       });
-      it('destination should be a sibling', () => {
-        expect(getNodeAtPath(updatedTree, ['first', 'second', 'first'])).to.equal(2);
-      });
-      it('direction should be correct', () => {
-        expect((getNodeAtPath(updatedTree, ['first']) as MosaicParent<number>).direction).to.equal('column');
+
+      it('tab group should contain both the destination and source nodes', () => {
+        const tabGroup = getNodeAtPath(
+          updatedTree,
+          [1, 1],
+        ) as MosaicTabsNode<number>;
+        expect(tabGroup.tabs).to.deep.equal([4, 3]);
       });
     });
+
     describe('drag leaf to root', () => {
       const updatedTree = updateTree(
-        MEDIUM_TREE,
-        createDragToUpdates(MEDIUM_TREE, ['second', 'second'], [], MosaicDropTargetPosition.RIGHT),
+        NARY_MEDIUM_TREE,
+        createDragToUpdates(
+          NARY_MEDIUM_TREE,
+          [1, 1], // Path to '4'
+          [], // Path to root
+          MosaicDropTargetPosition.RIGHT,
+        ),
       );
-      it('should remove sourceNode', () => {
-        expect(getNodeAtPath(updatedTree, ['first', 'second', 'second'])).to.equal(3);
+
+      it('should make the new root a split node', () => {
+        const root = updatedTree as MosaicSplitNode<number>;
+        expect(root.type).to.equal('split');
+        expect(root.direction).to.equal('row');
       });
-      it('source should be in destination', () => {
-        expect(getNodeAtPath(updatedTree, ['second'])).to.equal(4);
+
+      it('should place the dragged node at the top level', () => {
+        // The dragged node '4' is now the second child of the new root
+        expect(getNodeAtPath(updatedTree, [1])).to.equal(4);
       });
-      it('destination should be a sibling', () => {
-        expect(getNodeAtPath(updatedTree, ['first', 'first'])).to.equal(1);
-      });
-      it('direction should be correct', () => {
-        expect((getNodeAtPath(updatedTree, []) as MosaicParent<number>).direction).to.equal('row');
+
+      it('should place the original tree (pruned) as a sibling', () => {
+        // The original tree (without '4') is now the first child
+        const originalTreePruned = getNodeAtPath(updatedTree, [0]);
+        // We expect node '4' to be gone from its original location
+        expect(getNodeAtPath(originalTreePruned, [1, 1])).to.be.null;
       });
     });
   });
-  // TODO: createHideUpdate
-  // TODO: createExpandUpdate
 });

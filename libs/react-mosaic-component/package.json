@@ -1,0 +1,28 @@
+{
+  "name": "@lonli-lokli/react-mosaic-component",
+  "version": "0.1.0",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "dnd-core": "16.0.1",
+    "immutability-helper": "^3.1.1",
+    "lodash-es": "^4.17.21",
+    "prop-types": "^15.8.1",
+    "rdndmb-html5-to-touch": "^9.0.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-multi-backend": "^9.0.0",
+    "react-dnd-touch-backend": "^16.0.1",
+    "uuid": "^11.1.0"
+  },
+  "peerDependencies": {
+    "react": "16 - 19"
+  }
+}

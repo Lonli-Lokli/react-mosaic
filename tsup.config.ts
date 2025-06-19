@@ -1,7 +1,6 @@
 import { defineConfig } from 'tsup';
 import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extensions';
 
-
 export default defineConfig({
   bundle: true,
   entry: ['src/**/*.ts', 'src/**/*.tsx'],

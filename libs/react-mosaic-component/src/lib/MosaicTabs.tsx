@@ -1,0 +1,437 @@
+import React from 'react';
+import classNames from 'classnames';
+import { useDrop, DropTargetMonitor } from 'react-dnd';
+import { isEqual } from 'lodash-es';
+import {
+  MosaicKey,
+  MosaicTabsNode,
+  MosaicPath,
+  TileRenderer,
+  TabToolbarRenderer,
+  MosaicDragType,
+} from './types';
+import { BoundingBox, boundingBoxAsStyles } from './util/BoundingBox';
+import { MosaicContext, MosaicRootActions } from './contextTypes';
+import { MosaicDragItem, MosaicDropData } from './internalTypes';
+import { updateTree } from './util/mosaicUpdates';
+import { normalizeMosaicTree } from './util/mosaicUtilities';
+import { DraggableTab } from './DraggableTab';
+
+export interface MosaicTabsProps<T extends MosaicKey> {
+  node: MosaicTabsNode<T>;
+  path: MosaicPath;
+  renderTile: TileRenderer<T>;
+  renderTabToolbar?: TabToolbarRenderer<T>;
+  boundingBox: BoundingBox;
+  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
+  renderTabButton?: (props: {
+    tabKey: T;
+    index: number;
+    isActive: boolean;
+    path: MosaicPath;
+    mosaicId: string;
+    onTabClick: () => void;
+    mosaicActions: MosaicRootActions<T>;
+    renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
+  }) => React.ReactElement;
+}
+
+// Default tab button using DraggableTab with professional styling
+const DefaultTabButton = <T extends MosaicKey>({
+  tabKey,
+  index,
+  isActive,
+  path,
+  mosaicId,
+  onTabClick,
+  mosaicActions,
+  renderTabTitle = (tabKey) => `Tab ${tabKey}`,
+}: {
+  tabKey: T;
+  index: number;
+  isActive: boolean;
+  path: MosaicPath;
+  mosaicId: string;
+  onTabClick: () => void;
+  mosaicActions: MosaicRootActions<T>;
+  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
+}) => {
+  return (
+    <DraggableTab
+      tabKey={tabKey}
+      tabIndex={index}
+      tabContainerPath={path}
+      mosaicActions={mosaicActions}
+      mosaicId={mosaicId}
+    >
+      {({ isDragging, connectDragSource, connectDragPreview }) => {
+        const element = (
+          <button
+            className={classNames('mosaic-tab-button', {
+              '-active': isActive,
+              '-dragging': isDragging,
+            })}
+            onClick={onTabClick}
+            onMouseDown={(e) => {
+              // Mark that this focus came from mouse
+              (e.currentTarget as any)._mouseDown = true;
+            }}
+            onFocus={(e) => {
+              // If focus didn't come from mouse, it's keyboard navigation
+              if (!(e.currentTarget as any)._mouseDown) {
+                e.currentTarget.classList.add('focus-visible');
+              }
+              // Reset mouse flag
+              (e.currentTarget as any)._mouseDown = false;
+            }}
+            onBlur={(e) => {
+              // Remove focus-visible class when losing focus
+              e.currentTarget.classList.remove('focus-visible');
+            }}
+            title={`${tabKey}`}
+          >
+            {renderTabTitle(tabKey, path)}
+          </button>
+        );
+
+        const previewElement = connectDragPreview(element);
+        return connectDragSource(previewElement || element) || element;
+      }}
+    </DraggableTab>
+  );
+};
+
+// Drop target for tab reordering within the tab bar
+const TabDropTarget = <T extends MosaicKey>({
+  tabContainerPath,
+  insertIndex,
+  mosaicId,
+}: {
+  tabContainerPath: MosaicPath;
+  insertIndex: number;
+  mosaicActions: MosaicRootActions<T>;
+  mosaicId: string;
+}) => {
+  const [{ isOver, canDrop, draggedMosaicId }, connectDropTarget] = useDrop({
+    accept: MosaicDragType.WINDOW,
+    canDrop: (item: MosaicDragItem) => {
+      // Allow both tab reordering and external drops
+      const isTabReorder =
+        item?.isTab &&
+        item?.tabContainerPath &&
+        isEqual(item.tabContainerPath, tabContainerPath);
+      const isExternalDrop =
+        !item?.isTab || !isEqual(item.tabContainerPath, tabContainerPath);
+      const shouldAccept = isTabReorder || isExternalDrop;
+
+      return shouldAccept;
+    },
+    drop: (item: MosaicDragItem): MosaicDropData => {
+      return {
+        path: tabContainerPath,
+        position: undefined,
+        // Custom property to indicate this is a tab reorder operation
+        tabReorderIndex: insertIndex,
+      };
+    },
+    hover: () => {
+      // Hover handling for tab reordering
+    },
+    collect: (monitor: DropTargetMonitor<MosaicDragItem>) => {
+      const result = {
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+        draggedMosaicId: monitor.getItem()?.mosaicId,
+      };
+
+      return result;
+    },
+  });
+
+  // Check if any item is being dragged
+  const isDragging = draggedMosaicId != null;
+
+  return connectDropTarget(
+    <div
+      className={`tab-drop-target ${isOver ? 'tab-drop-target-hover' : ''}`}
+      style={{
+        width: isOver ? '40px' : isDragging ? '20px' : '2px', // Much smaller when not dragging
+        height: '100%',
+        minHeight: '28px',
+        position: 'relative',
+        background: 'transparent',
+        transition: 'all 0.2s ease',
+        flexShrink: 0,
+        cursor: 'pointer',
+        display: isDragging ? 'flex' : 'none', // Hide when not dragging
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+    >
+      {/* Drop indicator */}
+      {isOver ? (
+        // Show placeholder when hovering during drag
+        <div
+          style={{
+            width: '32px',
+            height: '24px',
+            background: 'linear-gradient(135deg, #007ACC, #0099FF)',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0, 122, 204, 0.3)',
+            border: '2px dashed white',
+            opacity: 0.9,
+            animation: 'pulse 1s infinite',
+          }}
+        >
+          <div
+            style={{
+              width: '0',
+              height: '0',
+              borderLeft: '4px solid transparent',
+              borderRight: '4px solid transparent',
+              borderTop: '6px solid white',
+              opacity: 0.8,
+            }}
+          />
+        </div>
+      ) : (
+        // Subtle indicator when not hovering
+        <div
+          style={{
+            width: '2px',
+            height: '20px',
+            background: canDrop
+              ? 'rgba(0, 122, 204, 0.2)'
+              : 'rgba(0, 0, 0, 0.1)',
+            borderRadius: '1px',
+            transition: 'all 0.2s ease',
+          }}
+        />
+      )}
+    </div>,
+  );
+};
+
+export const MosaicTabs = <T extends MosaicKey>({
+  node,
+  path,
+  renderTile,
+  renderTabToolbar,
+  boundingBox,
+  renderTabTitle,
+  renderTabButton,
+}: MosaicTabsProps<T>) => {
+  const { mosaicActions, mosaicId } = React.useContext<MosaicContext<T>>(
+    MosaicContext as any,
+  );
+  const { tabs, activeTabIndex } = node;
+
+  // Drop target for the tab content area - blocks individual window drop targets
+  const [{ isOver, draggedMosaicId }, connectDropTarget] = useDrop({
+    accept: MosaicDragType.WINDOW,
+    canDrop: () => {
+      // Never accept drops - this is just to block individual window drop targets from showing
+      return false;
+    },
+    collect: (monitor: DropTargetMonitor<MosaicDragItem>) => ({
+      isOver: monitor.isOver({ shallow: true }),
+      draggedMosaicId: monitor.getItem()?.mosaicId,
+    }),
+  });
+
+  // Drop target for the tab bar area to handle external drops
+  const [
+    { isOver: isTabBarOver, draggedMosaicId: tabBarDraggedMosaicId },
+    connectTabBarDropTarget,
+  ] = useDrop({
+    accept: MosaicDragType.WINDOW,
+    canDrop: (item: MosaicDragItem, monitor) => {
+      // Accept drops that are directly over the tab bar and not being handled by TabDropTarget
+      return monitor.isOver({ shallow: true });
+    },
+    drop: (): MosaicDropData => {
+      return {
+        path,
+        position: undefined, // No position needed - always add as new tab
+      };
+    },
+    collect: (monitor: DropTargetMonitor<MosaicDragItem>) => ({
+      isOver: monitor.isOver({ shallow: true }),
+      draggedMosaicId: monitor.getItem()?.mosaicId,
+    }),
+  });
+
+  const onTabClick = (index: number) => {
+    if (index === activeTabIndex) {
+      return;
+    }
+    mosaicActions.updateTree([
+      {
+        path,
+        spec: { activeTabIndex: { $set: index } },
+      },
+    ]);
+  };
+
+  const addTab = () => {
+    if (mosaicActions.createNode == null) {
+      throw new Error('Operation invalid unless `createNode` is defined');
+    }
+    Promise.resolve(mosaicActions.createNode()).then((newNode) => {
+      if (typeof newNode !== 'string' && typeof newNode !== 'number') {
+        console.error(
+          'createNode() for adding a tab should return a MosaicKey (string or number).',
+        );
+        return;
+      }
+
+      // Update tree and normalize
+      const updates = [
+        {
+          path, // The path to this tabs node
+          spec: {
+            tabs: { $push: [newNode] },
+            // Set the new tab as active. Its index is the original length of the array.
+            activeTabIndex: { $set: tabs.length },
+          },
+        },
+      ];
+
+      let newTree = mosaicActions.getRoot();
+      if (!newTree) return;
+
+      updates.forEach((update) => {
+        newTree = updateTree(newTree!, [update]);
+      });
+
+      const normalizedTree = normalizeMosaicTree(newTree);
+      mosaicActions.replaceWith([], normalizedTree!);
+    });
+  };
+
+  const renderDefaultToolbar = () =>
+    connectTabBarDropTarget(
+      <div
+        className={classNames('mosaic-tab-bar', {
+          'tab-bar-drop-target-hover':
+            isTabBarOver && tabBarDraggedMosaicId === mosaicId,
+        })}
+        style={{
+          position: 'relative',
+        }}
+      >
+        {/* Drop target at the beginning */}
+        <TabDropTarget
+          tabContainerPath={path}
+          insertIndex={0}
+          mosaicActions={mosaicActions}
+          mosaicId={mosaicId}
+        />
+
+        {tabs.map((tabKey, index) => {
+          const TabButtonComponent = renderTabButton || DefaultTabButton;
+          return (
+            <React.Fragment key={tabKey}>
+              <TabButtonComponent
+                tabKey={tabKey}
+                index={index}
+                isActive={index === activeTabIndex}
+                path={path}
+                mosaicId={mosaicId}
+                onTabClick={() => onTabClick(index)}
+                mosaicActions={mosaicActions}
+                renderTabTitle={renderTabTitle}
+              />
+
+              {/* Drop target after each tab */}
+              <TabDropTarget
+                tabContainerPath={path}
+                insertIndex={index + 1}
+                mosaicActions={mosaicActions}
+                mosaicId={mosaicId}
+              />
+            </React.Fragment>
+          );
+        })}
+
+        {/* Show add tab button only if createNode is available */}
+        {mosaicActions.createNode && (
+          <button
+            className="mosaic-tab-add-button"
+            onClick={addTab}
+            onMouseDown={(e) => {
+              // Mark that this focus came from mouse
+              (e.currentTarget as any)._mouseDown = true;
+            }}
+            onFocus={(e) => {
+              // If focus didn't come from mouse, it's keyboard navigation
+              if (!(e.currentTarget as any)._mouseDown) {
+                e.currentTarget.classList.add('focus-visible');
+              }
+              // Reset mouse flag
+              (e.currentTarget as any)._mouseDown = false;
+            }}
+            onBlur={(e) => {
+              // Remove focus-visible class when losing focus
+              e.currentTarget.classList.remove('focus-visible');
+            }}
+            aria-label="Add new tab"
+            title="Add new tab"
+          >
+            +
+          </button>
+        )}
+      </div>,
+    );
+
+  const activeTabKey = tabs[activeTabIndex];
+  const tilePath = path.concat(activeTabIndex);
+
+  return (
+    // This is the container for the entire tab group.
+    // Its position and size are determined ONLY by the boundingBox.
+    <div
+      className="mosaic-tabs-container"
+      style={{
+        position: 'absolute',
+        ...boundingBoxAsStyles(boundingBox),
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* Use the custom toolbar renderer if provided, otherwise use our default */}
+      {renderTabToolbar
+        ? renderTabToolbar({
+            tabs,
+            activeTabIndex,
+            path,
+            DraggableTab: (props) => (
+              <DraggableTab
+                {...props}
+                tabContainerPath={path}
+                mosaicActions={mosaicActions}
+                mosaicId={mosaicId}
+              />
+            ),
+          })
+        : renderDefaultToolbar()}
+
+      {connectDropTarget(
+        <div
+          className="mosaic-tile"
+          style={{
+            flexGrow: 1, // This makes the tile fill the remaining vertical space
+            position: 'relative', // Provides a positioning context for its children (like drop targets)
+          }}
+        >
+          {renderTile(activeTabKey, tilePath)}
+        </div>,
+      )}
+    </div>
+  );
+};
+

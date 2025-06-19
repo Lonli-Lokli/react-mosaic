@@ -1,24 +1,13 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "declaration": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": ["dom", "scripthost"],
-    "moduleResolution": "node",
-    "module": "ESNext",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "target": "ES2022",
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "sourceMap": true,
     "strict": true
   },
-  "exclude": ["docs", "lib", "node_modules"],
+  "extends": "./tsconfig.base.json"
 }
