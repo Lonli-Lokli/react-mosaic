@@ -6,6 +6,9 @@ import React from 'react';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import packageJson from '../../../../libs/react-mosaic-component/package.json'
+
 // Import new n-ary types and utilities
 import {
   createBalancedTreeFromLeaves,
@@ -22,11 +25,7 @@ import {
 } from '@lonli-lokli/react-mosaic-component';
 import { CloseAdditionalControlsButton } from './toolbars';
 
-// tslint:disable no-console
-
-// tslint:disable-next-line no-var-requires
-// tslint:disable-next-line no-var-requires
-const version = '11'; //require('../package.json');
+const version = packageJson.version;
 
 export const THEMES = {
   ['Blueprint']: 'mosaic-blueprint-theme',
@@ -174,7 +173,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
       <div className={classNames(Classes.NAVBAR, Classes.DARK)}>
         <div className={Classes.NAVBAR_GROUP}>
           <div className={Classes.NAVBAR_HEADING}>
-            <a href="https://github.com/nomcopter/react-mosaic">
+            <a href="https://github.com/lonli-lokli/react-mosaic">
               react-mosaic <span className="version">v{version}</span>
             </a>
           </div>

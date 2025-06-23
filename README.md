@@ -1,4 +1,8 @@
-# React Mosaic
+<p style="text-align: center;">
+  <picture>
+    <img alt="React Mosaic" src="./apps//demo-app/public/favicon.svg" width="100%">
+  </picture>
+</p>
 
 [![NPM Version](https://img.shields.io/npm/v/react-mosaic-component.svg)](https://www.npmjs.com/package/react-mosaic-component)
 [![CircleCI](https://circleci.com/gh/nomcopter/react-mosaic/tree/master.svg?style=svg)](https://circleci.com/gh/nomcopter/react-mosaic/tree/master)

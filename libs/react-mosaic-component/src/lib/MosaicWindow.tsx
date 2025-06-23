@@ -529,7 +529,9 @@ function ConnectedInternalMosaicWindow<T extends MosaicKey = string>(
                   position,
                 },
         );
-        mosaicActions.updateTree(updates);
+        mosaicActions.updateTree(updates, {
+          shouldNormalize: true
+        });
         if (props.onDragEnd) {
           props.onDragEnd('drop');
         }

@@ -190,7 +190,7 @@ export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<
           },
         },
       ],
-      suppressOnRelease,
+      { suppressOnRelease },
     );
   };
 }

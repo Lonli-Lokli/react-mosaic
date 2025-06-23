@@ -30,7 +30,13 @@ import {
   createRemoveUpdate,
   updateTree,
 } from './util/mosaicUpdates';
-import { convertLegacyToNary, getLeaves, getParentAndChildIndex, isSplitNode } from './util/mosaicUtilities';
+import {
+  convertLegacyToNary,
+  getLeaves,
+  getParentAndChildIndex,
+  isSplitNode,
+  normalizeMosaicTree,
+} from './util/mosaicUtilities';
 
 const DEFAULT_EXPAND_PERCENTAGE = 70;
 
@@ -201,12 +207,28 @@ export class MosaicWithoutDragDropContext<
 
   private updateRoot = (
     updates: MosaicUpdate<T>[],
-    suppressOnRelease = false,
-    suppressOnChange = false,
+    modifiers?: {
+      suppressOnRelease?: boolean;
+      suppressOnChange?: boolean;
+      shouldNormalize?: boolean;
+    },
   ) => {
+    modifiers = {
+      shouldNormalize: modifiers?.shouldNormalize ?? false,
+      suppressOnRelease: modifiers?.suppressOnRelease ?? false,
+      suppressOnChange: modifiers?.suppressOnChange ?? false,
+    };
     const currentNode = this.getRoot() || ({} as MosaicNode<T>);
 
-    this.replaceRoot(updateTree(currentNode, updates), suppressOnRelease, suppressOnChange);
+    const updatedNode = modifiers.shouldNormalize
+      ? normalizeMosaicTree(updateTree(currentNode, updates))
+      : updateTree(currentNode, updates);
+
+    this.replaceRoot(
+      updatedNode,
+      modifiers.suppressOnRelease,
+      modifiers.suppressOnChange,
+    );
   };
 
   private replaceRoot = (
@@ -232,7 +254,9 @@ export class MosaicWithoutDragDropContext<
       if (path.length === 0) {
         this.replaceRoot(null);
       } else {
-        this.updateRoot([createRemoveUpdate(this.getRoot(), path)]);
+        this.updateRoot([createRemoveUpdate(this.getRoot(), path)], {
+          shouldNormalize: true,
+        });
       }
     },
     expand: (
@@ -241,7 +265,9 @@ export class MosaicWithoutDragDropContext<
     ) => this.updateRoot([createExpandUpdate<T>(path, percentage)]),
     getRoot: () => this.getRoot()!,
     hide: (path: MosaicPath, suppressOnChange = false) => {
-      this.updateRoot([createHideUpdate<T>(this.getRoot(), path)], false, suppressOnChange);
+      this.updateRoot([createHideUpdate<T>(this.getRoot(), path)], {
+        suppressOnChange,
+      });
     },
     show: (path: MosaicPath, suppressOnChange = false) => {
       // To show a hidden node, we need to restore its split percentage
@@ -262,14 +288,21 @@ export class MosaicWithoutDragDropContext<
       if (isSplitNode(parent)) {
         // Restore equal percentages for all children
         const equalPercentage = 100 / parent.children.length;
-        const newPercentages = Array(parent.children.length).fill(equalPercentage);
-        
-        this.updateRoot([{
-          path: path.slice(0, -1), // Parent path
-          spec: {
-            splitPercentages: { $set: newPercentages },
-          },
-        }], false, suppressOnChange);
+        const newPercentages = Array(parent.children.length).fill(
+          equalPercentage,
+        );
+
+        this.updateRoot(
+          [
+            {
+              path: path.slice(0, -1), // Parent path
+              spec: {
+                splitPercentages: { $set: newPercentages },
+              },
+            },
+          ],
+          { suppressOnChange },
+        );
       }
       // For tab nodes, the hide operation just changes active tab, so no need to restore
     },
@@ -289,7 +322,6 @@ export class MosaicWithoutDragDropContext<
     mosaicActions: this.actions,
     mosaicId: this.state.mosaicId,
     blueprintNamespace: this.props.blueprintNamespace!,
-
   };
 
   private renderTree() {
@@ -300,15 +332,15 @@ export class MosaicWithoutDragDropContext<
     } else {
       const { renderTile, resize } = this.props;
       return (
-      <MosaicRoot 
-        root={root} 
-        renderTile={renderTile} 
-        renderTabToolbar={this.props.renderTabToolbar}
-        resize={resize}
-        renderTabTitle={this.props.renderTabTitle}
-        renderTabButton={this.props.renderTabButton}
-      />
-    );
+        <MosaicRoot
+          root={root}
+          renderTile={renderTile}
+          renderTabToolbar={this.props.renderTabToolbar}
+          resize={resize}
+          renderTabTitle={this.props.renderTabTitle}
+          renderTabButton={this.props.renderTabButton}
+        />
+      );
     }
   }
 
@@ -326,12 +358,12 @@ export class MosaicWithoutDragDropContext<
 }
 
 // Component to detect dragging and apply class to root
-function MosaicRootWithDragDetection({ 
-  className, 
-  children 
-}: { 
-  className?: string; 
-  children: React.ReactNode; 
+function MosaicRootWithDragDetection({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
 }) {
   const [{ isDragging }] = useDrop({
     accept: MosaicDragType.WINDOW,
@@ -343,9 +375,11 @@ function MosaicRootWithDragDetection({
   });
 
   return (
-    <div className={classNames(className, 'mosaic mosaic-drop-target', {
-      '-dragging': isDragging,
-    })}>
+    <div
+      className={classNames(className, 'mosaic mosaic-drop-target', {
+        '-dragging': isDragging,
+      })}
+    >
       {children}
     </div>
   );
@@ -369,3 +403,4 @@ export class Mosaic<T extends MosaicKey = string> extends React.PureComponent<
     );
   }
 }
+

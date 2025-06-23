@@ -200,7 +200,7 @@ export const DraggableTab = <T extends MosaicKey>({
         return;
       }
 
-      if (isSelfDrop) {
+      if (isSelfDrop || dropResult.path === undefined) {
         // This is a self-drop but not a reorder - don't allow it
         mosaicActions.show(ownPath, true); // suppressOnChange = true for drag operations
         return;
@@ -210,14 +210,16 @@ export const DraggableTab = <T extends MosaicKey>({
       const updates = createDragToUpdates(
         mosaicActions.getRoot()!,
         ownPath,
-        dropResult.path!,
+        dropResult.path,
         dropResult.position === undefined
           ? {
               type: 'tab-container',
             }
           : { type: 'split', position: dropResult.position },
       );
-      mosaicActions.updateTree(updates);
+      mosaicActions.updateTree(updates, {
+        shouldNormalize: true
+      });
     },
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
