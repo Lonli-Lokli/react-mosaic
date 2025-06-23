@@ -1,8 +1,7 @@
 {
   "name": "@lonli-lokli/react-mosaic-component",
-  "version": "0.1.0",
-    "description": "A React Tiling Window Manager",
-
+  "version": "0.4.0",
+  "description": "A React Tiling Window Manager",
   "main": "./index.cjs",
   "type": "module",
   "exports": {

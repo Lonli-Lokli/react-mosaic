@@ -18,7 +18,7 @@
     "start": "npx nx run demo-app:serve",
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
-    "build:app": "npx nx run demo-app:build",
+    "build:app": "npx nx run demo-app:build --base ./",
     "build:lib": "npx nx run react-mosaic-component:build",
     "release": "npm run lint && npm run test && nx release --skip-publish"
   },

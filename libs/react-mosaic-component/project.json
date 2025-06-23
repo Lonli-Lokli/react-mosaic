@@ -4,16 +4,22 @@
   "sourceRoot": "libs/react-mosaic-component/src",
   "projectType": "library",
   "tags": [],
-  "targets": {
+  "targetDefaults": {
     "nx-release-publish": {
       "options": {
-        "packageRoot": "dist/{projectRoot}"
+        "packageRoot": "dist/libs/{projectName}"
       }
     }
   },
   "release": {
     "version": {
-      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "manifestRootsToUpdate": [
+        "{projectRoot}",
+        {
+          "path": "dist/libs/{projectName}",
+          "preserveLocalDependencyProtocols": false
+        }
+      ],
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"
     }
