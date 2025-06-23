@@ -4,10 +4,10 @@
   "sourceRoot": "libs/react-mosaic-component/src",
   "projectType": "library",
   "tags": [],
-  "targetDefaults": {
+  "targets": {
     "nx-release-publish": {
       "options": {
-        "packageRoot": "dist/libs/{projectName}"
+        "packageRoot": "dist/{projectRoot}"
       }
     }
   },
