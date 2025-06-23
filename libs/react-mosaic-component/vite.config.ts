@@ -32,6 +32,8 @@ export default defineConfig(() => ({
   build: {
     outDir: '../../dist/libs/react-mosaic-component',
     emptyOutDir: true,
+    target: 'esnext',
+    sourcemap: true,
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -41,13 +43,14 @@ export default defineConfig(() => ({
       entry: ['src/index.ts', 'src/lib/styles/index.less'],
       name: 'react-mosaic-component',
       fileName: 'index',
+      cssFileName: 'react-mosaic-component',
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.
-      formats: ['es' as const],
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'classnames'],
     },
   },
   test: {

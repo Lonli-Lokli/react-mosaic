@@ -1,18 +1,34 @@
 {
   "name": "@lonli-lokli/react-mosaic-component",
   "version": "0.1.0",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+    "description": "A React Tiling Window Manager",
+
+  "main": "./index.cjs",
+  "type": "module",
   "exports": {
+    "./react-mosaic-component.css": "./react-mosaic-component.css",
+    "./package.json": "./package.json",
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
+      "import": "./index.js",
+      "default": "./index.cjs"
     }
   },
+  "style": "./react-mosaic-component.css",
   "repository": {
     "type": "git",
     "url": "https://github.com/lonli-lokli/react-mosaic.git"
   },
+  "sideEffects": [
+    "*.css"
+  ],
+  "keywords": [
+    "ui",
+    "react",
+    "component",
+    "typescript",
+    "tiling-window-manager",
+    "window-manager"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "classnames": "^2.5.1",
