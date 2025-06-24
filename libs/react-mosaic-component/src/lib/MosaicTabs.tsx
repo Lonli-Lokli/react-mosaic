@@ -105,7 +105,6 @@ const DefaultTabButton = <T extends MosaicKey>({
 const TabDropTarget = <T extends MosaicKey>({
   tabContainerPath,
   insertIndex,
-  mosaicId,
 }: {
   tabContainerPath: MosaicPath;
   insertIndex: number;
@@ -126,7 +125,7 @@ const TabDropTarget = <T extends MosaicKey>({
 
       return shouldAccept;
     },
-    drop: (item: MosaicDragItem): MosaicDropData => {
+    drop: (): MosaicDropData => {
       return {
         path: tabContainerPath,
         position: undefined,
@@ -153,63 +152,24 @@ const TabDropTarget = <T extends MosaicKey>({
 
   return connectDropTarget(
     <div
-      className={`tab-drop-target ${isOver ? 'tab-drop-target-hover' : ''}`}
-      style={{
-        width: isOver ? '40px' : isDragging ? '20px' : '2px', // Much smaller when not dragging
-        height: '100%',
-        minHeight: '28px',
-        position: 'relative',
-        background: 'transparent',
-        transition: 'all 0.2s ease',
-        flexShrink: 0,
-        cursor: 'pointer',
-        display: isDragging ? 'flex' : 'none', // Hide when not dragging
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
+      className={classNames('tab-drop-target', {
+        'tab-drop-target-hover': isOver,
+        'dragging': isDragging,
+      })}
     >
       {/* Drop indicator */}
       {isOver ? (
         // Show placeholder when hovering during drag
-        <div
-          style={{
-            width: '32px',
-            height: '24px',
-            background: 'linear-gradient(135deg, #007ACC, #0099FF)',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(0, 122, 204, 0.3)',
-            border: '2px dashed white',
-            opacity: 0.9,
-            animation: 'pulse 1s infinite',
-          }}
-        >
-          <div
-            style={{
-              width: '0',
-              height: '0',
-              borderLeft: '4px solid transparent',
-              borderRight: '4px solid transparent',
-              borderTop: '6px solid white',
-              opacity: 0.8,
-            }}
-          />
+        <div className="tab-drop-placeholder">
+          <div className="tab-drop-arrow" />``
         </div>
       ) : (
         // Subtle indicator when not hovering
         <div
-          style={{
-            width: '2px',
-            height: '20px',
-            background: canDrop
-              ? 'rgba(0, 122, 204, 0.2)'
-              : 'rgba(0, 0, 0, 0.1)',
-            borderRadius: '1px',
-            transition: 'all 0.2s ease',
-          }}
+          className={classNames('tab-drop-indicator', {
+            'can-drop': canDrop,
+            'default': !canDrop,
+          })}
         />
       )}
     </div>,
@@ -231,7 +191,8 @@ export const MosaicTabs = <T extends MosaicKey>({
   const { tabs, activeTabIndex } = node;
 
   // Drop target for the tab content area - blocks individual window drop targets
-  const [{ isOver, draggedMosaicId }, connectDropTarget] = useDrop({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, connectDropTarget] = useDrop({
     accept: MosaicDragType.WINDOW,
     canDrop: () => {
       // Never accept drops - this is just to block individual window drop targets from showing
@@ -249,7 +210,7 @@ export const MosaicTabs = <T extends MosaicKey>({
     connectTabBarDropTarget,
   ] = useDrop({
     accept: MosaicDragType.WINDOW,
-    canDrop: (item: MosaicDragItem, monitor) => {
+    canDrop: (_item: MosaicDragItem, monitor) => {
       // Accept drops that are directly over the tab bar and not being handled by TabDropTarget
       return monitor.isOver({ shallow: true });
     },

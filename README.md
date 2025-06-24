@@ -584,7 +584,7 @@ npm run deploy
 
 ## 📋 Migration Guide
 
-### Fork: From v6 to v1
+### From `react-mosaic-component` to `@lonli-lokli/react-mosaic-component`
 
 Version 1 introduces significant changes with n-ary tree support:
 
@@ -598,7 +598,92 @@ Version 1 introduces significant changes with n-ary tree support:
 
 - String paths (`['first', 'second']`) → Numeric paths (`[0, 1]`)
 
-**Migration Example:**
+**Type Changes:**
+
+Replace deprecated types with new ones:
+
+```typescript
+// OLD: Deprecated types
+import { 
+  MosaicBranch,    // ❌ Use numeric indices instead
+  MosaicParent,    // ❌ Use MosaicSplitNode instead
+  MosaicNode       // ✅ Still valid but structure changed
+} from 'react-mosaic-component';
+
+// NEW: Updated types
+import { 
+  MosaicSplitNode,     // ✅ Replaces MosaicParent
+  MosaicTabsNode,      // ✅ New tab container type
+  MosaicNode,          // ✅ Union of split, tabs, or leaf
+  MosaicPath,          // ✅ Now number[] instead of string[]
+  // Helper functions for type checking
+  isSplitNode,
+  isTabsNode,
+  convertLegacyToNary  // ✅ Migration utility
+} from '@lonli-lokli/react-mosaic-component';
+```
+
+**Migration Steps:**
+
+1. **Update Type Checking Logic:**
+
+```typescript
+// OLD: Manual type checking
+if ('first' in node && 'second' in node) {
+  // Handle parent node
+  const leftChild = node.first;
+  const rightChild = node.second;
+}
+
+// NEW: Use helper functions
+import { isSplitNode, isTabsNode } from '@lonli-lokli/react-mosaic-component';
+
+if (isSplitNode(node)) {
+  // Handle split node with multiple children
+  node.children.forEach((child, index) => {
+    // Process each child
+  });
+} else if (isTabsNode(node)) {
+  // Handle tab container
+  node.tabs.forEach((tab, index) => {
+    // Process each tab
+  });
+} else {
+  // Handle leaf node (panel)
+  console.log('Panel ID:', node);
+}
+```
+
+2. **Update Path Handling:**
+
+```typescript
+// OLD: String-based paths
+const oldPath: MosaicBranch[] = ['first', 'second'];
+const childPath = [...parentPath, 'first'];
+
+// NEW: Numeric paths
+const newPath: MosaicPath = [0, 1];
+const childPath = [...parentPath, 0]; // First child
+```
+
+3. **Use Migration Utility for Existing Data:**
+
+```typescript
+import { convertLegacyToNary } from '@lonli-lokli/react-mosaic-component';
+
+// Convert old tree structure to new format
+const legacyTree = {
+  direction: 'row',
+  first: 'panel1',
+  second: 'panel2',
+  splitPercentage: 40
+};
+
+const modernTree = convertLegacyToNary(legacyTree);
+// Result: { type: 'split', direction: 'row', children: ['panel1', 'panel2'], splitPercentages: [40, 60] }
+```
+
+**Complete Migration Example:**
 
 ```typescript
 // Old v6 structure
@@ -614,7 +699,7 @@ const oldTree = {
   splitPercentage: 40,
 };
 
-// New v7 structure
+// New structure
 const newTree = {
   type: 'split',
   direction: 'row',
@@ -629,9 +714,49 @@ const newTree = {
     },
   ],
 };
+
+// Or use the conversion utility
+const convertedTree = convertLegacyToNary(oldTree);
 ```
 
-Initial value can be specified in legacy mode as `convertLegacyToNary` utility used to migrate old trees.
+**Working with the New Tree Structure:**
+
+```typescript
+import { 
+  MosaicNode, 
+  MosaicSplitNode, 
+  MosaicTabsNode,
+  isSplitNode,
+  isTabsNode,
+  getNodeAtPath,
+  getLeaves
+} from '@lonli-lokli/react-mosaic-component';
+
+// Type-safe tree traversal
+function processNode<T>(node: MosaicNode<T>, path: number[] = []): void {
+  if (isSplitNode(node)) {
+    console.log(`Split node at path [${path.join(', ')}]:`, node.direction);
+    node.children.forEach((child, index) => {
+      processNode(child, [...path, index]);
+    });
+  } else if (isTabsNode(node)) {
+    console.log(`Tab group at path [${path.join(', ')}]:`, node.tabs.length, 'tabs');
+    node.tabs.forEach((tab, index) => {
+      console.log(`  Tab ${index}:`, tab);
+    });
+  } else {
+    console.log(`Panel at path [${path.join(', ')}]:`, node);
+  }
+}
+
+// Get all panels in the tree
+const allPanels = getLeaves(tree);
+
+// Get specific node by path
+const nodeAtPath = getNodeAtPath(tree, [1, 0]); // Second child's first child
+```
+
+Initial value can be specified in legacy format as the `convertLegacyToNary` utility is used internally to migrate old trees automatically.
 
 ## ❓ FAQ
 
