@@ -1,6 +1,6 @@
 {
   "name": "@lonli-lokli/react-mosaic-component",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A React Tiling Window Manager",
   "main": "./index.mjs",
   "type": "module",
@@ -9,7 +9,10 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./index.mjs",
-      "default": "./index.cjs"
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./index.cjs"
+      }
     }
   },
   "style": "./react-mosaic-component.css",

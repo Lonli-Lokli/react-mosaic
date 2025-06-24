@@ -1,18 +1,17 @@
-<p style="text-align: center;">
-  <picture>
-    <img alt="React Mosaic" src="./apps/demo-app/public/favicon.svg" width="100%">
-  </picture>
-</p>
-
-[![NPM Version](https://img.shields.io/npm/v/react-mosaic-component.svg)](https://www.npmjs.com/package/react-mosaic-component)
-[![CircleCI](https://circleci.com/gh/nomcopter/react-mosaic/tree/master.svg?style=svg)](https://circleci.com/gh/nomcopter/react-mosaic/tree/master)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![NPM Version](https://img.shields.io/npm/v/react-mosaic-component.svg)](https://www.npmjs.com/package/@lonli-lokli/react-mosaic-component)
 [![React](https://img.shields.io/badge/React-16%20%7C%2017%20%7C%2018%20%7C%2019-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+
+<p style="text-align: center;">
 
 > **A powerful React Tiling Window Manager for building sophisticated, user-controlled interfaces**
 
 React Mosaic is a full-featured React component library that provides complete control over complex workspace layouts. Built with TypeScript, it offers a flexible API for creating tiled interfaces that users can dynamically resize, rearrange, and customize.
+<picture>
+<img alt="React Mosaic" src="./apps/demo-app/public/favicon.svg" width="64px">
+</picture>
+
+</p>
 
 **🚀 [Live Demo](https://lonli-lokli.github.io/react-mosaic/) | [Documentation](https://github.com/lonli-lokli/react-mosaic)**
 
@@ -67,7 +66,7 @@ export type ViewId = 'a' | 'b' | 'c';
 
 const TITLE_MAP: Record<ViewId, string> = {
   a: 'Left Panel',
-  b: 'Top Right Panel', 
+  b: 'Top Right Panel',
   c: 'Bottom Right Panel',
 };
 
@@ -93,7 +92,7 @@ export const MyApp = () => (
         children: [
           'a',
           {
-            type: 'split', 
+            type: 'split',
             direction: 'column',
             splitPercentages: [50, 50],
             children: ['b', 'c'],
@@ -116,7 +115,7 @@ export const MyApp = () => (
 React Mosaic uses an n-ary tree structure to represent layouts:
 
 - **Split Nodes**: Container nodes that divide space between children
-- **Tab Nodes**: Container nodes that stack children in tabs  
+- **Tab Nodes**: Container nodes that stack children in tabs
 - **Leaf Nodes**: Individual panels identified by unique keys
 
 ```typescript
@@ -139,6 +138,7 @@ interface MosaicTabsNode<T> {
 #### 🛣️ Paths
 
 Paths in Mosaic are arrays of numbers representing the route to a node:
+
 - `[]` - Root node
 - `[0]` - First child of root
 - `[1, 2]` - Third child of second child of root
@@ -151,25 +151,25 @@ Paths in Mosaic are arrays of numbers representing the route to a node:
 interface MosaicProps<T> {
   // Required
   renderTile: (id: T, path: MosaicPath) => ReactElement;
-  
+
   // State Management (use one or the other)
-  initialValue?: MosaicNode<T> | null;  // Uncontrolled
-  value?: MosaicNode<T> | null;         // Controlled
-  
+  initialValue?: MosaicNode<T> | null; // Uncontrolled
+  value?: MosaicNode<T> | null; // Controlled
+
   // Event Handlers
   onChange?: (newNode: MosaicNode<T> | null) => void;
   onRelease?: (newNode: MosaicNode<T> | null) => void;
-  
+
   // Styling & Theming
   className?: string;
   blueprintNamespace?: string;
-  
+
   // Functionality
   createNode?: CreateNode<T>;
   resize?: ResizeOptions;
   zeroStateView?: ReactElement;
   renderTabTitle?: TabTitleRenderer<T>;
-  
+
   // Drag & Drop
   dragAndDropManager?: DragDropManager;
   mosaicId?: string;
@@ -183,28 +183,28 @@ interface MosaicWindowProps<T> {
   // Required
   title: string;
   path: MosaicPath;
-  
+
   // Styling
   className?: string;
-  
+
   // Controls
   toolbarControls?: ReactNode;
   additionalControls?: ReactNode;
   additionalControlButtonText?: string;
-  
+
   // Behavior
   draggable?: boolean;
   createNode?: CreateNode<T>;
-  
+
   // Event Handlers
   onDragStart?: () => void;
   onDragEnd?: (type: 'drop' | 'reset') => void;
   onAdditionalControlsToggle?: (open: boolean) => void;
-  
+
   // Customization
   renderPreview?: (props: MosaicWindowProps<T>) => ReactElement;
   renderToolbar?: (props: MosaicWindowProps<T>) => ReactElement;
-  
+
   // Advanced
   disableAdditionalControlsOverlay?: boolean;
 }
@@ -224,7 +224,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
   className="mosaic-blueprint-theme"
   blueprintNamespace="bp5" // Latest Blueprint version
   // ... other props
-/>
+/>;
 ```
 
 ### Dark Theme
@@ -272,7 +272,7 @@ const ControlledExample = () => {
     type: 'split',
     direction: 'row',
     splitPercentages: [50, 50],
-    children: ['panel1', 'panel2']
+    children: ['panel1', 'panel2'],
   });
 
   const handleAddPanel = () => {
@@ -280,7 +280,7 @@ const ControlledExample = () => {
       type: 'split',
       direction: 'column',
       splitPercentages: [70, 30],
-      children: [currentNode!, 'new-panel']
+      children: [currentNode!, 'new-panel'],
     });
   };
 
@@ -304,11 +304,11 @@ const ControlledExample = () => {
 ### Custom Toolbar Controls
 
 ```tsx
-import { 
-  RemoveButton, 
-  SplitButton, 
+import {
+  RemoveButton,
+  SplitButton,
   ExpandButton,
-  Separator 
+  Separator,
 } from 'react-mosaic-component';
 
 const customControls = (
@@ -317,7 +317,7 @@ const customControls = (
     <ExpandButton />
     <Separator />
     <RemoveButton />
-    <button 
+    <button
       className="mosaic-default-control"
       onClick={() => console.log('Custom action')}
     >
@@ -326,13 +326,9 @@ const customControls = (
   </>
 );
 
-<MosaicWindow
-  title="My Panel"
-  path={path}
-  toolbarControls={customControls}
->
+<MosaicWindow title="My Panel" path={path} toolbarControls={customControls}>
   {/* Panel content */}
-</MosaicWindow>
+</MosaicWindow>;
 ```
 
 ### Tab Groups
@@ -353,7 +349,7 @@ const tabsExample: MosaicNode<string> = {
     </div>
   )}
   renderTabTitle={(tabKey) => `📄 ${tabKey.toUpperCase()}`}
-/>
+/>;
 ```
 
 ### Complex Layout with Mixed Content
@@ -392,13 +388,13 @@ const complexLayout: MosaicNode<string> = {
 ### Working with Trees
 
 ```tsx
-import { 
-  getLeaves, 
+import {
+  getLeaves,
   createBalancedTreeFromLeaves,
   updateTree,
   createRemoveUpdate,
   createExpandUpdate,
-  getNodeAtPath
+  getNodeAtPath,
 } from '@lonli-lokli/react-mosaic-component';
 
 // Get all leaf nodes (panel IDs)
@@ -429,17 +425,18 @@ import { useContext } from 'react';
 import { MosaicWindowContext } from '@lonli-lokli/react-mosaic-component';
 
 const MyCustomComponent = () => {
-  const { mosaicActions, mosaicWindowActions } = useContext(MosaicWindowContext);
-  
+  const { mosaicActions, mosaicWindowActions } =
+    useContext(MosaicWindowContext);
+
   const handleSplit = async () => {
     await mosaicWindowActions.split();
   };
-  
+
   const handleRemove = () => {
     const path = mosaicWindowActions.getPath();
     mosaicActions.remove(path);
   };
-  
+
   return (
     <div>
       <button onClick={handleSplit}>Split Window</button>
@@ -453,7 +450,7 @@ const MyCustomComponent = () => {
 
 ### Requirements
 
-- Node.js 18+ 
+- Node.js 18+
 - npm/yarn/pnpm
 - React 16-19
 
@@ -511,6 +508,7 @@ We welcome contributions! Here's how to get started:
 ### Code Style
 
 This project uses:
+
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type checking
@@ -569,6 +567,7 @@ npm run build:watch
 The demo app is automatically deployed to GitHub Pages when changes are pushed to the main branch.
 
 To deploy manually:
+
 ```bash
 npm run build:app
 npm run deploy
@@ -577,7 +576,7 @@ npm run deploy
 ## 🐛 Browser Support
 
 | Browser | Version |
-|---------|---------|
+| ------- | ------- |
 | Chrome  | 90+     |
 | Firefox | 88+     |
 | Safari  | 14+     |
@@ -590,26 +589,29 @@ npm run deploy
 Version 1 introduces significant changes with n-ary tree support:
 
 **Tree Structure Changes:**
+
 - Binary trees (`first`/`second`) → N-ary trees (`children` array)
 - `splitPercentage` → `splitPercentages` array
 - New tab node type: `MosaicTabsNode`
 
 **Path Changes:**
+
 - String paths (`['first', 'second']`) → Numeric paths (`[0, 1]`)
 
 **Migration Example:**
+
 ```typescript
 // Old v6 structure
 const oldTree = {
   direction: 'row',
   first: 'panel1',
   second: {
-    direction: 'column', 
+    direction: 'column',
     first: 'panel2',
     second: 'panel3',
-    splitPercentage: 60
+    splitPercentage: 60,
   },
-  splitPercentage: 40
+  splitPercentage: 40,
 };
 
 // New v7 structure
@@ -623,14 +625,13 @@ const newTree = {
       type: 'split',
       direction: 'column',
       splitPercentages: [60, 40],
-      children: ['panel2', 'panel3']
-    }
-  ]
+      children: ['panel2', 'panel3'],
+    },
+  ],
 };
 ```
 
 Initial value can be specified in legacy mode as `convertLegacyToNary` utility used to migrate old trees.
-
 
 ## ❓ FAQ
 
