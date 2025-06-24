@@ -154,21 +154,22 @@ const TabDropTarget = <T extends MosaicKey>({
     <div
       className={classNames('tab-drop-target', {
         'tab-drop-target-hover': isOver,
-        'dragging': isDragging,
+        dragging: isDragging,
       })}
     >
       {/* Drop indicator */}
       {isOver ? (
         // Show placeholder when hovering during drag
         <div className="tab-drop-placeholder">
-          <div className="tab-drop-arrow" />``
+          <div className="tab-drop-arrow" />
+          ``
         </div>
       ) : (
         // Subtle indicator when not hovering
         <div
           className={classNames('tab-drop-indicator', {
             'can-drop': canDrop,
-            'default': !canDrop,
+            default: !canDrop,
           })}
         />
       )}
@@ -240,7 +241,9 @@ export const MosaicTabs = <T extends MosaicKey>({
 
   const addTab = () => {
     if (mosaicActions.createNode == null) {
-      throw new Error('Operation invalid unless `createNode` is defined');
+      throw new Error(
+        'Operation invalid unless `createNode` is defined on Mosaic',
+      );
     }
     Promise.resolve(mosaicActions.createNode()).then((newNode) => {
       if (typeof newNode !== 'string' && typeof newNode !== 'number') {
@@ -320,7 +323,7 @@ export const MosaicTabs = <T extends MosaicKey>({
         })}
 
         {/* Show add tab button only if createNode is available */}
-        {mosaicActions.createNode && (
+        {
           <button
             className="mosaic-tab-add-button"
             onClick={addTab}
@@ -345,7 +348,7 @@ export const MosaicTabs = <T extends MosaicKey>({
           >
             +
           </button>
-        )}
+        }
       </div>,
     );
 
@@ -395,4 +398,3 @@ export const MosaicTabs = <T extends MosaicKey>({
     </div>
   );
 };
-

@@ -16,6 +16,7 @@
     "start": "npx nx run demo-app:serve",
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
+    "format": "nx format:write",
     "build:app": "npx nx run demo-app:build --base ./",
     "build:lib": "npm-run-all clean -lp build-lib:** && run-s copy",
     "build-lib:less": "lessc --autoprefix=defaults ./libs/react-mosaic-component/src/lib/styles/index.less ./dist/libs/react-mosaic-component/react-mosaic-component.css",

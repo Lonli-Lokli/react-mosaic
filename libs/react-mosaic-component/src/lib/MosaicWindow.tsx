@@ -34,7 +34,11 @@ import {
   MosaicTabsNode,
 } from './types';
 import { createDragToUpdates } from './util/mosaicUpdates';
-import { getNodeAtPath, isTabsNode } from './util/mosaicUtilities';
+import {
+  getNodeAtPath,
+  getParentNode,
+  isTabsNode,
+} from './util/mosaicUtilities';
 import { OptionalBlueprint } from './util/OptionalBlueprint';
 
 export interface MosaicWindowProps<T extends MosaicKey> {
@@ -130,8 +134,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
 
     // Check if this window is inside a tab container
     const root = this.context.mosaicActions.getRoot();
-    const parentPath = this.props.path.slice(0, -1);
-    const parentNode = getNodeAtPath(root, parentPath);
+    const parentNode = getParentNode(root, this.props.path);
     const isInTabContainer = isTabsNode(parentNode);
 
     return (
@@ -188,8 +191,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     }
 
     const root = this.context.mosaicActions.getRoot();
-    const parentPath = path.slice(0, -1);
-    const parentNode = getNodeAtPath(root, parentPath);
+    const parentNode = getParentNode(root, path);
 
     if (isTabsNode(parentNode)) {
       return DEFAULT_CONTROLS_IN_TABS;
@@ -212,8 +214,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     const { additionalControlsOpen } = this.state;
     const toolbarControls = this.getToolbarControls();
     const root = this.context.mosaicActions.getRoot();
-    const parentPath = path.slice(0, -1);
-    const parentNode = getNodeAtPath(root, parentPath);
+    const parentNode = getParentNode(root, path);
     const isDragAllowed =
       draggable && path.length > 0 && !isTabsNode(parentNode);
     const connectIfDraggable = isDragAllowed
@@ -307,11 +308,8 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     const { path } = this.props;
     const { mosaicActions } = this.context;
     const root = mosaicActions.getRoot() as MosaicNode<T> | null;
+    const parentNode = getParentNode(root, path);
 
-    const parentNode = getNodeAtPath(
-      mosaicActions.getRoot(),
-      path.slice(0, -1),
-    );
     if (isTabsNode(parentNode)) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(
@@ -352,8 +350,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
 
     // The path to a MosaicWindow points to the panel/leaf (T).
     // To check if it's already in a tab group, we must look at its parent.
-    const parentPath = path.slice(0, -1);
-    const parentNode = getNodeAtPath(root, parentPath);
+    const parentNode = getParentNode(root, path);
 
     if (isTabsNode(parentNode)) {
       if (process.env.NODE_ENV !== 'production') {
@@ -406,6 +403,11 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     });
   };
 
+  private getRoot = () => {
+    const { mosaicActions } = this.context;
+    return mosaicActions.getRoot();
+  };
+
   private swap = (...args: any[]) => {
     this.checkCreateNode();
     const { mosaicActions } = this.context;
@@ -439,6 +441,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     mosaicWindowActions: {
       split: this.split,
       addTab: this.addTab,
+      getRoot: this.getRoot,
       replaceWithNew: this.swap,
       setAdditionalControlsOpen: this.setAdditionalControlsOpen,
       getPath: this.getPath,
@@ -530,7 +533,7 @@ function ConnectedInternalMosaicWindow<T extends MosaicKey = string>(
                 },
         );
         mosaicActions.updateTree(updates, {
-          shouldNormalize: true
+          shouldNormalize: true,
         });
         if (props.onDragEnd) {
           props.onDragEnd('drop');

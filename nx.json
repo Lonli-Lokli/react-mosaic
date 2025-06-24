@@ -66,5 +66,4 @@
       "dependsOn": ["^build", "build"]
     }
   }
-
 }

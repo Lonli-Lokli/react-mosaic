@@ -59,6 +59,8 @@ export {
   isTabsNode,
   convertLegacyToNary,
   isSplitNode,
+  getParentNode,
+  getParentPath,
 } from './util/mosaicUtilities';
 export { MosaicWindow, type MosaicWindowProps } from './MosaicWindow';
 export {

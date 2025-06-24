@@ -73,11 +73,14 @@ export interface MosaicRootActions<T extends MosaicKey> {
    * @param updates
    * @param suppressOnRelease (default: false)
    */
-  updateTree: (updates: MosaicUpdate<T>[], modifiers?: {
-    suppressOnRelease?: boolean,
-    suppressOnChange?: boolean,
-    shouldNormalize?: boolean,
-  }) => void;
+  updateTree: (
+    updates: MosaicUpdate<T>[],
+    modifiers?: {
+      suppressOnRelease?: boolean;
+      suppressOnChange?: boolean;
+      shouldNormalize?: boolean;
+    },
+  ) => void;
   /**
    * Returns the root of this Mosaic instance
    */
@@ -97,6 +100,10 @@ export interface MosaicWindowActions {
    * The current node becomes the first tab and the new node the second tab of the result.
    */
   addTab: (...args: any[]) => Promise<void>;
+  /**
+   * Returns the root of this Mosaic instance
+   */
+  getRoot: () => MosaicNode<T> | null;
   /**
    * Fails if no `createNode()` is defined
    * Convenience function to call `createNode()` and replace the current node with it.

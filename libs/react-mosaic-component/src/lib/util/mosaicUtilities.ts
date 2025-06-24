@@ -11,6 +11,7 @@ import {
   MosaicSplitNode,
   MosaicTabsNode,
 } from '../types';
+import { Mosaic } from '../Mosaic';
 
 function alternateDirection<T extends MosaicKey>(
   node: MosaicNode<T>,
@@ -65,6 +66,16 @@ export function isTabsNode<T extends MosaicKey>(
   );
 }
 
+export function getParentNode<T extends MosaicKey>(
+  root: MosaicNode<T> | null,
+  path: MosaicPath,
+): MosaicNode<T> | null {
+  return getNodeAtPath(root, getParentPath(path));
+}
+
+export function getParentPath(path: MosaicPath): MosaicPath {
+  return path.slice(0, -1);
+}
 /**
  * Creates a balanced binary tree from `leaves` with the goal of making them as equal area as possible
  * @param leaves
@@ -338,21 +349,25 @@ export function normalizeMosaicTree<T extends MosaicKey>(
     const flattenedChildren: MosaicNode<T>[] = [];
     const flattenedPercentages: number[] = [];
     let percentagesAreValid = true;
-    
+
     for (let i = 0; i < normalizedChildren.length; i++) {
       const child = normalizedChildren[i];
-      
+
       // If this child is a split with the same direction, flatten it
       if (isSplitNode(child) && child.direction === node.direction) {
         // Add all of the child split's children to our flattened list
         flattenedChildren.push(...child.children);
-        
+
         // Calculate percentages for the flattened children
-        if (percentagesAreValid && node.splitPercentages && child.splitPercentages) {
+        if (
+          percentagesAreValid &&
+          node.splitPercentages &&
+          child.splitPercentages
+        ) {
           const parentPercentage = node.splitPercentages[i];
           // Scale the child's percentages by the parent's percentage
           const scaledChildPercentages = child.splitPercentages.map(
-            (childPerc) => (childPerc * parentPercentage) / 100
+            (childPerc) => (childPerc * parentPercentage) / 100,
           );
           flattenedPercentages.push(...scaledChildPercentages);
         } else {
@@ -372,26 +387,35 @@ export function normalizeMosaicTree<T extends MosaicKey>(
 
     // 4. Calculate final split percentages
     let finalSplitPercentages: number[] | undefined;
-    
-    const childrenWereFlattened = flattenedChildren.length !== normalizedChildren.length;
-    const childrenWereRemoved = node.children.length !== normalizedChildren.length;
-    
-    if (percentagesAreValid && flattenedPercentages.length === flattenedChildren.length) {
+
+    const childrenWereFlattened =
+      flattenedChildren.length !== normalizedChildren.length;
+    const childrenWereRemoved =
+      node.children.length !== normalizedChildren.length;
+
+    if (
+      percentagesAreValid &&
+      flattenedPercentages.length === flattenedChildren.length
+    ) {
       // We successfully calculated percentages during flattening
       finalSplitPercentages = flattenedPercentages;
-    } else if (!childrenWereFlattened && !childrenWereRemoved && node.splitPercentages) {
+    } else if (
+      !childrenWereFlattened &&
+      !childrenWereRemoved &&
+      node.splitPercentages
+    ) {
       // No structural changes, keep original percentages
       finalSplitPercentages = node.splitPercentages;
     } else if (childrenWereRemoved && node.splitPercentages) {
       // Some children were removed, recalculate proportionally
       const remainingPercentages: number[] = [];
       let totalRemainingPercentage = 0;
-      
+
       // Find the percentages of children that remain
       for (let i = 0; i < normalizedChildren.length; i++) {
         const child = normalizedChildren[i];
-        const originalIndex = node.children.findIndex(originalChild => 
-          normalizeMosaicTree(originalChild) === child
+        const originalIndex = node.children.findIndex(
+          (originalChild) => normalizeMosaicTree(originalChild) === child,
         );
         if (originalIndex >= 0 && node.splitPercentages[originalIndex]) {
           remainingPercentages.push(node.splitPercentages[originalIndex]);
@@ -400,19 +424,25 @@ export function normalizeMosaicTree<T extends MosaicKey>(
           remainingPercentages.push(0);
         }
       }
-      
+
       if (totalRemainingPercentage > 0) {
         // Scale remaining percentages to sum to 100
-        finalSplitPercentages = remainingPercentages.map(p => (p / totalRemainingPercentage) * 100);
+        finalSplitPercentages = remainingPercentages.map(
+          (p) => (p / totalRemainingPercentage) * 100,
+        );
       } else {
         // Fallback to equal distribution
         const equalPercentage = 100 / flattenedChildren.length;
-        finalSplitPercentages = Array(flattenedChildren.length).fill(equalPercentage);
+        finalSplitPercentages = Array(flattenedChildren.length).fill(
+          equalPercentage,
+        );
       }
     } else {
       // Fallback to equal distribution for all children
       const equalPercentage = 100 / flattenedChildren.length;
-      finalSplitPercentages = Array(flattenedChildren.length).fill(equalPercentage);
+      finalSplitPercentages = Array(flattenedChildren.length).fill(
+        equalPercentage,
+      );
     }
 
     return {
