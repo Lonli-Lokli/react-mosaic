@@ -283,7 +283,7 @@ export class MosaicWithoutDragDropContext<
         return; // No parent found
       }
 
-      const { parent, childIndex } = parentInfo;
+      const { parent } = parentInfo;
 
       if (isSplitNode(parent)) {
         // Restore equal percentages for all children

@@ -1,6 +1,6 @@
 <p style="text-align: center;">
   <picture>
-    <img alt="React Mosaic" src="./apps//demo-app/public/favicon.svg" width="100%">
+    <img alt="React Mosaic" src="./apps/demo-app/public/favicon.svg" width="100%">
   </picture>
 </p>
 
@@ -14,7 +14,7 @@
 
 React Mosaic is a full-featured React component library that provides complete control over complex workspace layouts. Built with TypeScript, it offers a flexible API for creating tiled interfaces that users can dynamically resize, rearrange, and customize.
 
-**🚀 [Live Demo](https://nomcopter.github.io/react-mosaic/) | [Documentation](https://github.com/nomcopter/react-mosaic/wiki)**
+**🚀 [Live Demo](https://lonli-lokli.github.io/react-mosaic/) | [Documentation](https://github.com/lonli-lokli/react-mosaic)**
 
 ## ✨ Features
 
@@ -37,27 +37,27 @@ React Mosaic is a full-featured React component library that provides complete c
 
 ```bash
 # Using npm
-npm install react-mosaic-component
+npm install @lonli-lokli/react-mosaic-component
 
 # Using yarn
-yarn add react-mosaic-component
+yarn add @lonli-lokli/react-mosaic-component
 
 # Using pnpm
-pnpm add react-mosaic-component
+pnpm add @lonli-lokli/react-mosaic-component
 ```
 
 ### Basic Setup
 
 1. Install the package
-2. Import the CSS file: `import 'react-mosaic-component/react-mosaic-component.css'`
+2. Import the CSS file: `import '@lonli-lokli/react-mosaic-component/react-mosaic-component.css'`
 3. (Optional) Install Blueprint for theming: `npm install @blueprintjs/core @blueprintjs/icons`
 
 ### Simple Example
 
 ```tsx
 import React from 'react';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import 'react-mosaic-component/react-mosaic-component.css';
+import { Mosaic, MosaicWindow } from '@lonli-lokli/react-mosaic-component';
+import '@lonli-lokli/react-mosaic-component/react-mosaic-component.css';
 
 // Optional: Add Blueprint theme
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -265,7 +265,7 @@ Create your own themes by styling the CSS classes:
 
 ```tsx
 import React, { useState } from 'react';
-import { Mosaic, MosaicNode } from 'react-mosaic-component';
+import { Mosaic, MosaicNode } from '@lonli-lokli/react-mosaic-component';
 
 const ControlledExample = () => {
   const [currentNode, setCurrentNode] = useState<MosaicNode<string> | null>({
@@ -399,7 +399,7 @@ import {
   createRemoveUpdate,
   createExpandUpdate,
   getNodeAtPath
-} from 'react-mosaic-component';
+} from '@lonli-lokli/react-mosaic-component';
 
 // Get all leaf nodes (panel IDs)
 const leaves = getLeaves(currentTree);
@@ -426,7 +426,7 @@ Access Mosaic's context in child components:
 
 ```tsx
 import { useContext } from 'react';
-import { MosaicWindowContext } from 'react-mosaic-component';
+import { MosaicWindowContext } from '@lonli-lokli/react-mosaic-component';
 
 const MyCustomComponent = () => {
   const { mosaicActions, mosaicWindowActions } = useContext(MosaicWindowContext);
@@ -461,7 +461,7 @@ const MyCustomComponent = () => {
 
 ```bash
 # Clone the repository
-git clone https://github.com/nomcopter/react-mosaic.git
+git clone https://github.com/lonli-lokli/react-mosaic.git
 cd react-mosaic
 
 # Install dependencies
@@ -497,7 +497,7 @@ We welcome contributions! Here's how to get started:
 ### Development Workflow
 
 1. **Fork** the repository
-2. **Clone** your fork: `git clone https://github.com/your-username/react-mosaic.git`
+2. **Clone** your fork: `git clone https://github.com/lonli-lokli/react-mosaic.git`
 3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
 4. **Install** dependencies: `npm install`
 5. **Make** your changes
@@ -585,9 +585,9 @@ npm run deploy
 
 ## 📋 Migration Guide
 
-### From v6 to v7
+### Fork: From v6 to v1
 
-Version 7 introduces significant changes with n-ary tree support:
+Version 1 introduces significant changes with n-ary tree support:
 
 **Tree Structure Changes:**
 - Binary trees (`first`/`second`) → N-ary trees (`children` array)
@@ -629,59 +629,8 @@ const newTree = {
 };
 ```
 
-Use the `convertLegacyToNary` utility to migrate old trees:
+Initial value can be specified in legacy mode as `convertLegacyToNary` utility used to migrate old trees.
 
-```typescript
-import { convertLegacyToNary } from 'react-mosaic-component';
-
-const newTree = convertLegacyToNary(oldTree);
-```
-
-## 🔗 Related Projects
-
-- [Blueprint](https://blueprintjs.com/) - React UI toolkit
-- [React DnD](https://react-dnd.github.io/react-dnd/) - Drag and drop for React
-- [Immutability Helper](https://github.com/kolodny/immutability-helper) - Immutable updates
-- [Golden Layout](https://golden-layout.com/) - Alternative layout library
-- [Dock Spawn](https://github.com/coderespawn/dock-spawn) - Docking framework
-
-## 📊 Performance
-
-React Mosaic is optimized for performance:
-
-- **React.memo**: Prevents unnecessary re-renders
-- **Efficient algorithms**: Fast tree diffing and updates
-- **Virtualization ready**: Supports large datasets
-- **Bundle size**: Minimal impact on bundle size
-- **Memory efficient**: Optimized for large layouts
-
-### Performance Tips
-
-1. **Use React.memo** for your panel components
-2. **Implement shouldComponentUpdate** for expensive renders
-3. **Use createNode callback** efficiently
-4. **Avoid frequent onChange** calls
-5. **Consider virtualization** for large datasets
-
-## 🎯 Roadmap
-
-### Short Term
-- [ ] Improved accessibility (ARIA labels, keyboard navigation)
-- [ ] Additional built-in themes (Material Design, Ant Design)
-- [ ] Enhanced mobile/touch support
-- [ ] Performance optimizations for large trees
-
-### Medium Term
-- [ ] Virtual scrolling for large datasets
-- [ ] Plugin system for extensions
-- [ ] Undo/redo functionality
-- [ ] Layout templates and presets
-
-### Long Term
-- [ ] Real-time collaboration features
-- [ ] Advanced layout algorithms
-- [ ] AI-powered layout suggestions
-- [ ] Integration with popular design systems
 
 ## ❓ FAQ
 
@@ -711,10 +660,9 @@ A: No hard limit, but performance may degrade with very large numbers of panels 
 
 ## 🆘 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/nomcopter/react-mosaic/issues)
-- **Discussions**: [Ask questions and share ideas](https://github.com/nomcopter/react-mosaic/discussions)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/lonli-lokli/react-mosaic/issues)
+- **Discussions**: [Ask questions and share ideas](https://github.com/lonli-lokli/react-mosaic/discussions)
 - **Stack Overflow**: Use the `react-mosaic` tag
-- **Discord**: Join our community server (link in repository)
 
 ## 📄 License
 
@@ -737,9 +685,5 @@ limitations under the License.
 <div align="center">
 
 **⭐ Star this repository if you find it useful!**
-
-[🚀 Live Demo](https://nomcopter.github.io/react-mosaic/) • [📚 Documentation](https://github.com/nomcopter/react-mosaic/wiki) • [💬 Discussions](https://github.com/nomcopter/react-mosaic/discussions)
-
-Made with ❤️ by the React Mosaic community
 
 </div>

@@ -3,10 +3,10 @@ import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extens
 
 export default defineConfig({
   bundle: true,
-  entry: ['src/**/*.ts', 'src/**/*.tsx'],
+  entry: ['./libs/react-mosaic-component/src/**/*.ts', '!./libs/react-mosaic-component/src/**/*.spec.ts'],
   format: ['cjs', 'esm'],
   dts: true,
-  outDir: './lib',
+  outDir: './dist/libs/react-mosaic-component',
   platform: 'neutral',
   outExtension({ format }) {
     return {

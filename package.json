@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "A React Tiling Window Manager",
   "license": "Apache-2.0",
-  
   "keywords": [
     "ui",
     "react",
@@ -12,14 +11,19 @@
     "tiling-window-manager",
     "window-manager"
   ],
- 
   "scripts": {
     "nx": "nx",
     "start": "npx nx run demo-app:serve",
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
     "build:app": "npx nx run demo-app:build --base ./",
-    "build:lib": "npx nx run react-mosaic-component:build",
+    "build:lib": "npm-run-all clean -lp build-lib:** && run-s copy",
+    "build-lib:less": "lessc --autoprefix=defaults ./libs/react-mosaic-component/src/lib/styles/index.less ./dist/libs/react-mosaic-component/react-mosaic-component.css",
+    "build-lib:js": "tsup",
+    "build-lib:check": "tsc -p ./libs/react-mosaic-component/tsconfig.lib.json --noEmit",
+    "build-lib:types": "tsup",
+    "clean": "shx rm -rf ./dist/libs/react-mosaic-component/",
+    "copy": "shx cp ./libs/react-mosaic-component/package.json ./dist/libs/react-mosaic-component/package.json && shx cp README.md ./dist/libs/react-mosaic-component/README.md && shx cp LICENSE ./dist/libs/react-mosaic-component/LICENSE",
     "release": "npm run lint && npm run test && nx release --skip-publish"
   },
   "dependencies": {
@@ -36,7 +40,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.16.1",
+    "@arethetypeswrong/cli": "0.18.2",
     "@babel/core": "^7.14.5",
     "@babel/preset-react": "^7.14.5",
     "@blueprintjs/core": "^5.7.0",
@@ -78,8 +82,9 @@
     "jsdom": "~22.1.0",
     "jsdom-global": "^3.0.2",
     "less": "^3.13.1",
+    "less-plugin-autoprefix": "^2.0.0",
     "mock-require": "^3.0.3",
-    "npm-run-all": "^4.1.5",
+    "npm-run-all2": "8.0.4",
     "nx": "21.2.0",
     "nx-github-pages": "^1.0.0",
     "prettier": "3.5.3",
@@ -87,12 +92,13 @@
     "react-dom": "^18.3.1",
     "react-refresh": "^0.14.0",
     "shx": "0.3.4",
-    "tsup": "^8.2.4",
+    "tsup": "^8.5.0",
     "typescript": "5.5.4",
     "typescript-eslint": "^8.29.0",
     "verdaccio": "^6.0.5",
     "vite": "^6.0.0",
     "vite-plugin-dts": "~4.5.0",
+    "vite-plugin-static-copy": "^3.0.2",
     "vitest": "^3.0.0"
   },
   "peerDependencies": {

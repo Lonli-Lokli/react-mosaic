@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { defer, drop, isEqual, values } from 'lodash-es';
+import { drop, isEqual, values } from 'lodash-es';
 import React, { useContext, ReactElement } from 'react';
 import {
   ConnectDragPreview,
