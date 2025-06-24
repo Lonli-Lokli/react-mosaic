@@ -1,3 +1,13 @@
+## 0.10.0 (2025-06-24)
+
+### 🩹 Fixes
+
+- add getRoot to MosaicWindow context ([0d713d7](https://github.com/Lonli-Lokli/react-mosaic/commit/0d713d7))
+
+### ❤️ Thank You
+
+- Lonli-Lokli @Lonli-Lokli
+
 ## 0.9.0 (2025-06-24)
 
 ### 🩹 Fixes

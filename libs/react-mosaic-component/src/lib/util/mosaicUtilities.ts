@@ -11,7 +11,6 @@ import {
   MosaicSplitNode,
   MosaicTabsNode,
 } from '../types';
-import { Mosaic } from '../Mosaic';
 
 function alternateDirection<T extends MosaicKey>(
   node: MosaicNode<T>,

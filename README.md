@@ -21,8 +21,8 @@ React Mosaic is a full-featured React component library that provides complete c
 - 🎨 **Drag & Drop**: Intuitive drag-and-drop interface for rearranging panels
 - 📱 **Responsive**: Works seamlessly on desktop and touch devices
 - 🎭 **Themeable**: Built-in Blueprint theme support with dark mode
-- 📦 **TypeScript**: Full TypeScript support with comprehensive type definitions
-- 🚀 **Performance**: Optimized for smooth interactions and large workspaces
+- 💪 **TypeScript**: Full TypeScript support with comprehensive type definitions
+- 📦 **ESM & CJS Support**: Available as both ES Modules and CommonJS for maximum compatibility
 - 🔧 **Extensible**: Customizable toolbar buttons and controls
 - 📚 **Well Documented**: Comprehensive API documentation and examples
 

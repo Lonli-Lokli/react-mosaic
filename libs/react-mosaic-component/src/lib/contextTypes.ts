@@ -103,7 +103,7 @@ export interface MosaicWindowActions {
   /**
    * Returns the root of this Mosaic instance
    */
-  getRoot: () => MosaicNode<T> | null;
+  getRoot: () => MosaicNode<MosaicKey> | null;
   /**
    * Fails if no `createNode()` is defined
    * Convenience function to call `createNode()` and replace the current node with it.
