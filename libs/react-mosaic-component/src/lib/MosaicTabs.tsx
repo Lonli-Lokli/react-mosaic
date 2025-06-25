@@ -36,18 +36,6 @@ export interface MosaicTabsProps<T extends MosaicKey> {
   }) => React.ReactElement;
 }
 
-const TOUCH_EVENT_OPTIONS = {
-  capture: true,
-  passive: false,
-};
-
-function isTouchEvent(
-  event: MouseEvent | TouchEvent | React.MouseEvent<any>,
-): event is TouchEvent {
-  return (event as TouchEvent).changedTouches != null;
-}
-
-
 
 // Default tab button using DraggableTab with professional styling
 const DefaultTabButton = <T extends MosaicKey>({
@@ -70,23 +58,6 @@ const DefaultTabButton = <T extends MosaicKey>({
   renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
 }) => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-
-  React.useEffect(() => {
-    const buttonElement = buttonRef.current;
-    if (!buttonElement) return;
-
-    const handleTouchStart = (event: TouchEvent) => {
-      // Native touch handling for drag functionality
-    };
-
-    buttonElement.addEventListener('touchstart', handleTouchStart, TOUCH_EVENT_OPTIONS);
-
-    return () => {
-      if (buttonElement) {
-        buttonElement.removeEventListener('touchstart', handleTouchStart, TOUCH_EVENT_OPTIONS);
-      }
-    };
-  }, []);
 
   return (
     <DraggableTab
