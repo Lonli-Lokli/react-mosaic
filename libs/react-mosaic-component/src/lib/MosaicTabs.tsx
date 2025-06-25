@@ -36,6 +36,19 @@ export interface MosaicTabsProps<T extends MosaicKey> {
   }) => React.ReactElement;
 }
 
+const TOUCH_EVENT_OPTIONS = {
+  capture: true,
+  passive: false,
+};
+
+function isTouchEvent(
+  event: MouseEvent | TouchEvent | React.MouseEvent<any>,
+): event is TouchEvent {
+  return (event as TouchEvent).changedTouches != null;
+}
+
+
+
 // Default tab button using DraggableTab with professional styling
 const DefaultTabButton = <T extends MosaicKey>({
   tabKey,
@@ -56,6 +69,25 @@ const DefaultTabButton = <T extends MosaicKey>({
   mosaicActions: MosaicRootActions<T>;
   renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
 }) => {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    const buttonElement = buttonRef.current;
+    if (!buttonElement) return;
+
+    const handleTouchStart = (event: TouchEvent) => {
+      // Native touch handling for drag functionality
+    };
+
+    buttonElement.addEventListener('touchstart', handleTouchStart, TOUCH_EVENT_OPTIONS);
+
+    return () => {
+      if (buttonElement) {
+        buttonElement.removeEventListener('touchstart', handleTouchStart, TOUCH_EVENT_OPTIONS);
+      }
+    };
+  }, []);
+
   return (
     <DraggableTab
       tabKey={tabKey}
@@ -67,27 +99,12 @@ const DefaultTabButton = <T extends MosaicKey>({
       {({ isDragging, connectDragSource, connectDragPreview }) => {
         const element = (
           <button
+            ref={buttonRef}
             className={classNames('mosaic-tab-button', {
               '-active': isActive,
               '-dragging': isDragging,
             })}
             onClick={onTabClick}
-            onMouseDown={(e) => {
-              // Mark that this focus came from mouse
-              (e.currentTarget as any)._mouseDown = true;
-            }}
-            onFocus={(e) => {
-              // If focus didn't come from mouse, it's keyboard navigation
-              if (!(e.currentTarget as any)._mouseDown) {
-                e.currentTarget.classList.add('focus-visible');
-              }
-              // Reset mouse flag
-              (e.currentTarget as any)._mouseDown = false;
-            }}
-            onBlur={(e) => {
-              // Remove focus-visible class when losing focus
-              e.currentTarget.classList.remove('focus-visible');
-            }}
             title={`${tabKey}`}
           >
             {renderTabTitle(tabKey, path)}
@@ -284,9 +301,6 @@ export const MosaicTabs = <T extends MosaicKey>({
           'tab-bar-drop-target-hover':
             isTabBarOver && tabBarDraggedMosaicId === mosaicId,
         })}
-        style={{
-          position: 'relative',
-        }}
       >
         {/* Drop target at the beginning */}
         <TabDropTarget
@@ -323,32 +337,14 @@ export const MosaicTabs = <T extends MosaicKey>({
         })}
 
         {/* Show add tab button only if createNode is available */}
-        {
-          <button
-            className="mosaic-tab-add-button"
-            onClick={addTab}
-            onMouseDown={(e) => {
-              // Mark that this focus came from mouse
-              (e.currentTarget as any)._mouseDown = true;
-            }}
-            onFocus={(e) => {
-              // If focus didn't come from mouse, it's keyboard navigation
-              if (!(e.currentTarget as any)._mouseDown) {
-                e.currentTarget.classList.add('focus-visible');
-              }
-              // Reset mouse flag
-              (e.currentTarget as any)._mouseDown = false;
-            }}
-            onBlur={(e) => {
-              // Remove focus-visible class when losing focus
-              e.currentTarget.classList.remove('focus-visible');
-            }}
-            aria-label="Add new tab"
-            title="Add new tab"
-          >
-            +
-          </button>
-        }
+        <button
+          className="mosaic-tab-add-button"
+          onClick={addTab}
+          aria-label="Add new tab"
+          title="Add new tab"
+        >
+          +
+        </button>
       </div>,
     );
 
@@ -360,12 +356,7 @@ export const MosaicTabs = <T extends MosaicKey>({
     // Its position and size are determined ONLY by the boundingBox.
     <div
       className="mosaic-tabs-container"
-      style={{
-        position: 'absolute',
-        ...boundingBoxAsStyles(boundingBox),
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      style={boundingBoxAsStyles(boundingBox)}
     >
       {/* Use the custom toolbar renderer if provided, otherwise use our default */}
       {renderTabToolbar
@@ -385,15 +376,7 @@ export const MosaicTabs = <T extends MosaicKey>({
         : renderDefaultToolbar()}
 
       {connectDropTarget(
-        <div
-          className="mosaic-tile"
-          style={{
-            flexGrow: 1, // This makes the tile fill the remaining vertical space
-            position: 'relative', // Provides a positioning context for its children (like drop targets)
-          }}
-        >
-          {renderTile(activeTabKey, tilePath)}
-        </div>,
+        <div className="mosaic-tile">{renderTile(activeTabKey, tilePath)}</div>,
       )}
     </div>
   );

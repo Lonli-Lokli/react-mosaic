@@ -127,10 +127,26 @@
 }
 
 .mosaic-tabs-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
   .mosaic-tab-bar {
     display: flex;
     align-items: center;
     position: relative;
+    flex-shrink: 0;
+    z-index: 4;
+    gap: 4px;
+  }
+
+  .mosaic-tile {
+    position: relative;
+    flex: 1;
+    height: 0;
+    overflow: hidden;
+    z-index: 1;
   }
 }
 
@@ -154,7 +170,7 @@
 .mosaic-tab-button {
   background: transparent;
   border: none;
-  padding: 4px 12px;
+  padding: 0;
   margin: 0;
   font-size: 12px;
   font-weight: normal;
@@ -164,14 +180,14 @@
   user-select: none;
   white-space: nowrap;
   transition: color 0.1s ease;
-  
+
   &:hover {
     color: var(--text-primary, #333);
   }
 
   &.-active {
     color: var(--text-primary, #333);
-    border-bottom: 2px solid var(--accent-color, #007ACC);
+    border-bottom: 2px solid var(--accent-color, #007acc);
   }
 
   &.-dragging {
@@ -185,19 +201,9 @@
 
   // Only show focus for keyboard navigation (when using .focus-visible class)
   &.focus-visible {
-    outline: 2px solid var(--accent-color, #007ACC) !important;
+    outline: 2px solid var(--accent-color, #007acc) !important;
     outline-offset: 2px;
   }
-}
-
-// Simple tab bar
-.mosaic-tab-bar {
-  background: var(--bg-secondary, #f5f5f5);
-  border-bottom: 1px solid var(--border-color, #ddd);
-  display: flex;
-  align-items: flex-end;
-  min-height: 28px;
-  padding: 0 4px;
 }
 
 // Auto dark theme support
@@ -220,11 +226,11 @@
   font-size: 14px;
   font-weight: normal;
   outline: none !important; // Force remove all focus outlines
-  
+
   &:hover {
-    color: var(--accent-color, #007ACC);
+    color: var(--accent-color, #007acc);
   }
-  
+
   // Remove focus outline completely
   &:focus {
     outline: none !important;
@@ -232,7 +238,7 @@
 
   // Only show focus for keyboard navigation (when using .focus-visible class)
   &.focus-visible {
-    outline: 2px solid var(--accent-color, #007ACC) !important;
+    outline: 2px solid var(--accent-color, #007acc) !important;
     outline-offset: 2px;
   }
 }
@@ -266,7 +272,7 @@
   .tab-drop-placeholder {
     width: 32px;
     height: 24px;
-    background: linear-gradient(135deg, #007ACC, #0099FF);
+    background: linear-gradient(135deg, #007acc, #0099ff);
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -304,9 +310,13 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-
-

@@ -1,4 +1,4 @@
-import { Button, Classes, HTMLSelect } from '@blueprintjs/core';
+import { Classes, HTMLSelect } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
 import update from 'immutability-helper';
@@ -7,7 +7,7 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import packageJson from '../../../../libs/react-mosaic-component/package.json'
+import packageJson from '../../../../libs/react-mosaic-component/package.json';
 
 // Import new n-ary types and utilities
 import {
@@ -15,53 +15,26 @@ import {
   getLeaves,
   Mosaic,
   MosaicNode,
-  MosaicPath, // Path is now number[]
-  MosaicSplitNode, // New type for splits
-  MosaicWindow,
+  MosaicPath,
+  MosaicSplitNode,
   MosaicZeroState,
-  MosaicWindowContext,
-  AddTabButton,
-  RemoveButton,
 } from '@lonli-lokli/react-mosaic-component';
 import { CloseAdditionalControlsButton } from './toolbars';
 
+// Import extracted components and types
+import {
+  ExampleWindow,
+  EditableTabTitle,
+  CustomTabButton,
+} from '../components';
+import { DemoAppState, THEMES, Theme } from '../types/demo-types';
+import { findFirstLeafPath, createNode } from '../utils/demo-utils';
+
 const version = packageJson.version;
-
-export const THEMES = {
-  ['Blueprint']: 'mosaic-blueprint-theme',
-  ['Blueprint Dark']: classNames('mosaic-blueprint-theme', Classes.DARK),
-  ['None']: '',
-};
-
-export type Theme = keyof typeof THEMES;
 
 const additionalControls = React.Children.toArray([
   <CloseAdditionalControlsButton />,
 ]);
-
-const EMPTY_ARRAY: any[] = [];
-
-export interface DemoAppState {
-  currentNode: MosaicNode<number> | null;
-  currentTheme: Theme;
-}
-
-// Helper to find the path to the first leaf node in the tree
-const findFirstLeafPath = (node: MosaicNode<number> | null): MosaicPath => {
-  if (node === null || typeof node === 'number') {
-    return [];
-  }
-  if (node.type === 'split') {
-    return [0, ...findFirstLeafPath(node.children[0])];
-  }
-  if (node.type === 'tabs') {
-    return [
-      node.activeTabIndex,
-      ...findFirstLeafPath(node.tabs[node.activeTabIndex]),
-    ];
-  }
-  return [];
-};
 
 export class DemoApp extends React.PureComponent<object, DemoAppState> {
   state: DemoAppState = {
@@ -81,6 +54,9 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
       ],
     },
     currentTheme: 'Blueprint',
+    editableTitles: {},
+    dragInProgress: false,
+    dragOverPath: null,
   };
 
   render() {
@@ -91,7 +67,16 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
           <Mosaic<number>
             // The `path` passed to renderTile is now MosaicPath (number[])
             renderTile={(count, path) => (
-              <ExampleWindow count={count} path={path} />
+              <ExampleWindow
+                count={count}
+                path={path}
+                onUpdateTitle={this.updateTitle}
+                editableTitle={this.state.editableTitles[count]}
+                dragInProgress={this.state.dragInProgress}
+                onDragStart={this.onDragStart}
+                onDragEnd={this.onDragEnd}
+                onDragOver={() => this.onDragOver(path)}
+              />
             )}
             zeroStateView={<MosaicZeroState />}
             initialValue={this.state.currentNode}
@@ -101,11 +86,13 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
             className={THEMES[this.state.currentTheme]}
             blueprintNamespace="bp5"
             renderTabTitle={(tabKey, path) => (
-              <span style={{ color: '#007ACC', fontWeight: 'bold' }}>
-                📋 Window {tabKey}
-              </span>
+              <EditableTabTitle
+                tabKey={tabKey}
+                title={this.state.editableTitles[tabKey] || `Window ${tabKey}`}
+                onUpdateTitle={(newTitle) => this.updateTitle(tabKey, newTitle)}
+              />
             )}
-            // renderTabButton={CustomTabButton} // Uncomment to use custom tab buttons
+            //renderTabButton={CustomTabButton} // Now enabled with custom tab buttons
           />
         </div>
       </React.StrictMode>
@@ -114,7 +101,6 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
 
   private onChange = (currentNode: MosaicNode<number> | null) => {
     this.setState({ currentNode });
-
     console.log('Mosaic.onChange', currentNode);
   };
 
@@ -124,7 +110,6 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
 
   private autoArrange = () => {
     const leaves = getLeaves(this.state.currentNode);
-    // This utility still works as intended
     this.setState({
       currentNode: createBalancedTreeFromLeaves(leaves),
     });
@@ -168,6 +153,29 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
     this.setState({ currentNode: newTree });
   };
 
+  // Handle editable titles
+  private updateTitle = (panelId: number, newTitle: string) => {
+    this.setState({
+      editableTitles: {
+        ...this.state.editableTitles,
+        [panelId]: newTitle,
+      },
+    });
+  };
+
+  // Handle drag events for visual feedback
+  private onDragStart = () => {
+    this.setState({ dragInProgress: true });
+  };
+
+  private onDragEnd = () => {
+    this.setState({ dragInProgress: false, dragOverPath: null });
+  };
+
+  private onDragOver = (path: MosaicPath) => {
+    this.setState({ dragOverPath: path });
+  };
+
   private renderNavBar() {
     return (
       <div className={classNames(Classes.NAVBAR, Classes.DARK)}>
@@ -194,7 +202,9 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
               }
             >
               {React.Children.toArray(
-                Object.keys(THEMES).map((label) => <option>{label}</option>),
+                Object.keys(THEMES).map((label) => (
+                  <option key={label}>{label}</option>
+                )),
               )}
             </HTMLSelect>
           </label>
@@ -220,100 +230,12 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
           </button>
           <a
             className="github-link"
-            href="https://github.com/nomcopter/react-mosaic"
+            href="https://github.com/lonli-lokli/react-mosaic"
           >
-            <img
-              title="Github Link"
-              src="./GitHub-Mark-Light-32px.png"
-            />
+            <img title="Github Link" src="./GitHub-Mark-Light-32px.png" />
           </a>
         </div>
       </div>
     );
   }
 }
-
-interface ExampleWindowProps {
-  count: number;
-  path: MosaicPath; // Path is now MosaicPath
-}
-
-const createNode = () => Date.now();
-
-// Example custom tab button renderer
-const CustomTabButton = ({ tabKey, index, isActive, onTabClick }: any) => {
-  return (
-    <button
-      className={`custom-tab-button ${isActive ? 'active' : ''}`}
-      onClick={onTabClick}
-      style={{
-        background: isActive ? '#0070f3' : 'transparent',
-        border: '1px solid #e1e5e9',
-        borderRadius: '8px',
-        padding: '8px 16px',
-        margin: '0 4px',
-        color: isActive ? 'white' : '#666',
-        cursor: 'pointer',
-        fontWeight: isActive ? '600' : '400',
-        fontSize: '13px',
-        transition: 'all 0.2s ease',
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.background = '#f8f9fa';
-          e.currentTarget.style.borderColor = '#0070f3';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.borderColor = '#e1e5e9';
-        }
-      }}
-    >
-      Window {tabKey}
-    </button>
-  );
-};
-
-const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
-  return (
-    <MosaicWindow<number>
-      additionalControls={count === 3 ? additionalControls : EMPTY_ARRAY}
-      title={`Panel ${count}`}
-      createNode={createNode}
-      path={path} // Pass the n-ary path to the window
-      onDragStart={() => console.log('MosaicWindow.onDragStart')}
-      onDragEnd={(type) => console.log('MosaicWindow.onDragEnd', type)}
-      renderToolbar={
-        count === 2
-          ? () => (
-              <div className="toolbar-example">
-                <MosaicWindowContext.Consumer key="split">
-                  {({ mosaicWindowActions }) => (
-                    <Button
-                      variant="minimal"
-                      size="small"
-                      icon="split-columns"
-                      title="Split"
-                      onClick={() => mosaicWindowActions.split()}
-                    />
-                  )}
-                </MosaicWindowContext.Consumer>
-                <MosaicWindowContext.Consumer key="add-tab">
-                  {() => <AddTabButton />}
-                </MosaicWindowContext.Consumer>
-                <MosaicWindowContext.Consumer key="close">
-                  {() => <RemoveButton />}
-                </MosaicWindowContext.Consumer>
-              </div>
-            )
-          : null
-      }
-    >
-      <div className="example-window">
-        <h1>{`Panel Content ${count}`}</h1>
-      </div>
-    </MosaicWindow>
-  );
-};

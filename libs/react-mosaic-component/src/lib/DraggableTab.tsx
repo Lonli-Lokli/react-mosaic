@@ -106,22 +106,24 @@ export const DraggableTab = <T extends MosaicKey>({
           const currentActiveTabIndex = tabsNode.activeTabIndex;
 
           const [movedTab] = currentTabs.splice(tabIndex, 1);
-          currentTabs.splice(tabReorderIndex, 0, movedTab);
+          // Adjust insertion index if the removed tab was before the drop position
+          const adjustedInsertIndex = tabIndex < tabReorderIndex ? tabReorderIndex - 1 : tabReorderIndex;
+          currentTabs.splice(adjustedInsertIndex, 0, movedTab);
 
           // Calculate new active tab index
           let newActiveTabIndex = currentActiveTabIndex;
           if (tabIndex === currentActiveTabIndex) {
             // The active tab was moved
-            newActiveTabIndex = tabReorderIndex;
+            newActiveTabIndex = adjustedInsertIndex;
           } else if (
             tabIndex < currentActiveTabIndex &&
-            tabReorderIndex >= currentActiveTabIndex
+            adjustedInsertIndex >= currentActiveTabIndex
           ) {
             // A tab before the active tab was moved to after it
             newActiveTabIndex = currentActiveTabIndex - 1;
           } else if (
             tabIndex > currentActiveTabIndex &&
-            tabReorderIndex <= currentActiveTabIndex
+            adjustedInsertIndex <= currentActiveTabIndex
           ) {
             // A tab after the active tab was moved to before it
             newActiveTabIndex = currentActiveTabIndex + 1;
