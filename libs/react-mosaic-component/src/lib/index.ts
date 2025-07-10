@@ -33,6 +33,12 @@ export {
   type MosaicUpdateSpec,
   type TileRenderer,
   type TabTitleRenderer,
+  type LegacyMosaicNode,
+  type LegacyMosaicParent,
+  type LegacyMosaicKey,
+  type LegacyMosaicDirection,
+  type LegacyMosaicBranch,
+  type LegacyMosaicPath,
 } from './types';
 export {
   MosaicContext,
