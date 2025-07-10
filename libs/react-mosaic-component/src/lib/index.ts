@@ -33,6 +33,8 @@ export {
   type MosaicUpdateSpec,
   type TileRenderer,
   type TabTitleRenderer,
+  type TabButtonRenderer,
+  type TabToolbarRenderer,
   type LegacyMosaicNode,
   type LegacyMosaicParent,
   type LegacyMosaicKey,

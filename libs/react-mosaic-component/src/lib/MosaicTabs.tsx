@@ -9,6 +9,8 @@ import {
   TileRenderer,
   TabToolbarRenderer,
   MosaicDragType,
+  TabTitleRenderer,
+  TabButtonRenderer,
 } from './types';
 import { BoundingBox, boundingBoxAsStyles } from './util/BoundingBox';
 import { MosaicContext, MosaicRootActions } from './contextTypes';
@@ -24,17 +26,8 @@ export interface MosaicTabsProps<T extends MosaicKey> {
   renderTile: TileRenderer<T>;
   renderTabToolbar?: TabToolbarRenderer<T>;
   boundingBox: BoundingBox;
-  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
-  renderTabButton?: (props: {
-    tabKey: T;
-    index: number;
-    isActive: boolean;
-    path: MosaicPath;
-    mosaicId: string;
-    onTabClick: () => void;
-    mosaicActions: MosaicRootActions<T>;
-    renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
-  }) => React.ReactElement;
+  renderTabTitle?: TabTitleRenderer<T>;
+  renderTabButton?: TabButtonRenderer<T>;
   tabToolbarControls?: React.ReactNode;
 }
 
@@ -47,7 +40,7 @@ const DefaultTabButton = <T extends MosaicKey>({
   mosaicId,
   onTabClick,
   mosaicActions,
-  renderTabTitle = (tabKey) => `Tab ${tabKey}`,
+  renderTabTitle = ({ tabKey }) => `Tab ${tabKey}`,
 }: {
   tabKey: T;
   index: number;
@@ -56,7 +49,7 @@ const DefaultTabButton = <T extends MosaicKey>({
   mosaicId: string;
   onTabClick: () => void;
   mosaicActions: MosaicRootActions<T>;
-  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
+  renderTabTitle?: TabTitleRenderer<T>;
 }) => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -79,7 +72,7 @@ const DefaultTabButton = <T extends MosaicKey>({
             onClick={onTabClick}
             title={`${tabKey}`}
           >
-            {renderTabTitle(tabKey, path)}
+            {renderTabTitle({ tabKey, path, isActive, index, mosaicId })}
           </button>
         );
 
@@ -174,13 +167,12 @@ export const MosaicTabs = <T extends MosaicKey>({
   boundingBox,
   renderTabTitle,
   renderTabButton,
-  tabToolbarControls = createDefaultTabsControls(path)
+  tabToolbarControls = createDefaultTabsControls(path),
 }: MosaicTabsProps<T>) => {
   const { mosaicActions, mosaicId } = React.useContext<MosaicContext<T>>(
     MosaicContext as any,
   );
   const { tabs, activeTabIndex } = node;
-
 
   // Drop target for the tab content area - blocks individual window drop targets
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -323,9 +315,7 @@ export const MosaicTabs = <T extends MosaicKey>({
         </div>
 
         {/* Right section: toolbar controls */}
-        <div className="mosaic-tab-toolbar-controls">
-          {tabToolbarControls}
-        </div>
+        <div className="mosaic-tab-toolbar-controls">{tabToolbarControls}</div>
       </div>,
     );
 

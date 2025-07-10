@@ -1,6 +1,7 @@
 import { type Spec } from 'immutability-helper';
 
 import { ReactElement } from 'react';
+import { MosaicRootActions } from './contextTypes';
 
 // ================================================================================================
 // Legacy Types (For Conversion Only)
@@ -125,10 +126,27 @@ export type TileRenderer<T extends MosaicKey> = (
  * A function that renders the title content for a tab given its key and path.
  * If not provided, the tabKey will be used as the title.
  */
-export type TabTitleRenderer<T extends MosaicKey> = (
-  tabKey: T,
-  path: MosaicPath,
-) => React.ReactNode;
+export type TabTitleRenderer<T extends MosaicKey> = (props: {
+  tabKey: T;
+  index: number;
+  isActive: boolean;
+  path: MosaicPath;
+  mosaicId: string;
+}) => React.ReactNode;
+
+/**
+ * A function that renders the tab button for a tab.
+ * If not provided, the DefaultButton will be used.
+ */
+export type TabButtonRenderer<T extends MosaicKey> = (props: {
+  tabKey: T;
+  index: number;
+  isActive: boolean;
+  path: MosaicPath;
+  mosaicId: string;
+  onTabClick: () => void;
+  mosaicActions: MosaicRootActions<T>;
+}) => React.ReactElement;
 
 /**
  * A function that renders the entire toolbar for a tab group.
@@ -143,8 +161,12 @@ export type TabToolbarRenderer<T extends MosaicKey> = (props: {
     tabIndex: number;
     children: (dragProps: {
       isDragging: boolean;
-      connectDragSource: (element: React.ReactElement) => React.ReactElement | null;
-      connectDragPreview: (element: React.ReactElement) => React.ReactElement | null;
+      connectDragSource: (
+        element: React.ReactElement,
+      ) => React.ReactElement | null;
+      connectDragPreview: (
+        element: React.ReactElement,
+      ) => React.ReactElement | null;
     }) => React.ReactElement;
   }>;
 }) => React.ReactElement;

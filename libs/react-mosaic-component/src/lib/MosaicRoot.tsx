@@ -1,7 +1,7 @@
 import { flatten } from 'lodash-es';
 import React, { JSX } from 'react';
 
-import { MosaicContext, MosaicRootActions } from './contextTypes';
+import { MosaicContext } from './contextTypes';
 import { Split } from './Split';
 import {
   MosaicNode,
@@ -12,6 +12,8 @@ import {
   ResizeOptions,
   LegacyMosaicNode,
   TabToolbarRenderer,
+  TabTitleRenderer,
+  TabButtonRenderer,
 } from './types';
 import {
   BoundingBox,
@@ -27,16 +29,8 @@ export interface MosaicRootProps<T extends MosaicKey> {
   renderTile: TileRenderer<T>;
   renderTabToolbar?: TabToolbarRenderer<T>;
   resize?: ResizeOptions;
-  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
-  renderTabButton?: (props: {
-    tabKey: T;
-    index: number;
-    isActive: boolean;
-    path: MosaicPath;
-    mosaicId: string;
-    onTabClick: () => void;
-    mosaicActions: MosaicRootActions<T>;
-  }) => React.ReactElement;
+  renderTabTitle?: TabTitleRenderer<T>;
+  renderTabButton?: TabButtonRenderer<T>
 }
 
 export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<

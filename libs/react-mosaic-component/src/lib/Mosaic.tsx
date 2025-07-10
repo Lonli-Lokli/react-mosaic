@@ -23,6 +23,8 @@ import {
   TabToolbarRenderer,
   TileRenderer,
   MosaicDragType,
+  TabTitleRenderer,
+  TabButtonRenderer,
 } from './types';
 import {
   createExpandUpdate,
@@ -52,19 +54,11 @@ export interface MosaicBaseProps<T extends MosaicKey> {
   /**
    * Function to render custom tab titles
    */
-  renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
+  renderTabTitle?: TabTitleRenderer<T>;
   /**
    * Custom tab button renderer
    */
-  renderTabButton?: (props: {
-    tabKey: T;
-    index: number;
-    isActive: boolean;
-    path: MosaicPath;
-    mosaicId: string;
-    onTabClick: () => void;
-    mosaicActions: MosaicRootActions<T>;
-  }) => React.ReactElement;
+  renderTabButton?: TabButtonRenderer<T>;
 
   createNode?: CreateNode<T>;
   /**
