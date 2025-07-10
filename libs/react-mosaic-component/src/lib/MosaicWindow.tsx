@@ -11,9 +11,9 @@ import {
 } from 'react-dnd';
 
 import {
-  DEFAULT_CONTROLS_IN_TABS,
-  DEFAULT_CONTROLS_WITHOUT_CREATION,
-  DEFAULT_CONTROLS_WITH_CREATION,
+  DEFAULT_PANEL_CONTROLS_IN_TABS,
+  DEFAULT_PANEL_CONTROLS_WITHOUT_CREATION,
+  DEFAULT_PANEL_CONTROLS_WITH_CREATION,
 } from './buttons/defaultToolbarControls';
 import { Separator } from './buttons/Separator';
 import { MosaicContext, MosaicWindowContext } from './contextTypes';
@@ -194,11 +194,11 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     const parentNode = getParentNode(root, path);
 
     if (isTabsNode(parentNode)) {
-      return DEFAULT_CONTROLS_IN_TABS;
+      return DEFAULT_PANEL_CONTROLS_IN_TABS;
     } else if (createNode) {
-      return DEFAULT_CONTROLS_WITH_CREATION;
+      return DEFAULT_PANEL_CONTROLS_WITH_CREATION;
     } else {
-      return DEFAULT_CONTROLS_WITHOUT_CREATION;
+      return DEFAULT_PANEL_CONTROLS_WITHOUT_CREATION;
     }
   }
 

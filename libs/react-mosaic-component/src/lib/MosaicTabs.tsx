@@ -16,6 +16,7 @@ import { MosaicDragItem, MosaicDropData } from './internalTypes';
 import { updateTree } from './util/mosaicUpdates';
 import { normalizeMosaicTree } from './util/mosaicUtilities';
 import { DraggableTab } from './DraggableTab';
+import { createDefaultTabsControls } from './buttons/defaultToolbarControls';
 
 export interface MosaicTabsProps<T extends MosaicKey> {
   node: MosaicTabsNode<T>;
@@ -34,8 +35,8 @@ export interface MosaicTabsProps<T extends MosaicKey> {
     mosaicActions: MosaicRootActions<T>;
     renderTabTitle?: (tabKey: T, path: MosaicPath) => React.ReactNode;
   }) => React.ReactElement;
+  tabToolbarControls?: React.ReactNode;
 }
-
 
 // Default tab button using DraggableTab with professional styling
 const DefaultTabButton = <T extends MosaicKey>({
@@ -173,11 +174,13 @@ export const MosaicTabs = <T extends MosaicKey>({
   boundingBox,
   renderTabTitle,
   renderTabButton,
+  tabToolbarControls = createDefaultTabsControls(path)
 }: MosaicTabsProps<T>) => {
   const { mosaicActions, mosaicId } = React.useContext<MosaicContext<T>>(
     MosaicContext as any,
   );
   const { tabs, activeTabIndex } = node;
+
 
   // Drop target for the tab content area - blocks individual window drop targets
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -273,49 +276,56 @@ export const MosaicTabs = <T extends MosaicKey>({
             isTabBarOver && tabBarDraggedMosaicId === mosaicId,
         })}
       >
-        {/* Drop target at the beginning */}
-        <TabDropTarget
-          tabContainerPath={path}
-          insertIndex={0}
-          mosaicActions={mosaicActions}
-          mosaicId={mosaicId}
-        />
+        {/* Left section: tabs and add button */}
+        <div className="mosaic-tab-bar-tabs">
+          {/* Drop target at the beginning */}
+          <TabDropTarget
+            tabContainerPath={path}
+            insertIndex={0}
+            mosaicActions={mosaicActions}
+            mosaicId={mosaicId}
+          />
 
-        {tabs.map((tabKey, index) => {
-          const TabButtonComponent = renderTabButton || DefaultTabButton;
-          return (
-            <React.Fragment key={tabKey}>
-              <TabButtonComponent
-                tabKey={tabKey}
-                index={index}
-                isActive={index === activeTabIndex}
-                path={path}
-                mosaicId={mosaicId}
-                onTabClick={() => onTabClick(index)}
-                mosaicActions={mosaicActions}
-                renderTabTitle={renderTabTitle}
-              />
+          {tabs.map((tabKey, index) => {
+            const TabButtonComponent = renderTabButton || DefaultTabButton;
+            return (
+              <React.Fragment key={tabKey}>
+                <TabButtonComponent
+                  tabKey={tabKey}
+                  index={index}
+                  isActive={index === activeTabIndex}
+                  path={path}
+                  mosaicId={mosaicId}
+                  onTabClick={() => onTabClick(index)}
+                  mosaicActions={mosaicActions}
+                  renderTabTitle={renderTabTitle}
+                />
 
-              {/* Drop target after each tab */}
-              <TabDropTarget
-                tabContainerPath={path}
-                insertIndex={index + 1}
-                mosaicActions={mosaicActions}
-                mosaicId={mosaicId}
-              />
-            </React.Fragment>
-          );
-        })}
+                {/* Drop target after each tab */}
+                <TabDropTarget
+                  tabContainerPath={path}
+                  insertIndex={index + 1}
+                  mosaicActions={mosaicActions}
+                  mosaicId={mosaicId}
+                />
+              </React.Fragment>
+            );
+          })}
 
-        {/* Show add tab button only if createNode is available */}
-        <button
-          className="mosaic-tab-add-button"
-          onClick={addTab}
-          aria-label="Add new tab"
-          title="Add new tab"
-        >
-          +
-        </button>
+          <button
+            className="mosaic-tab-add-button"
+            onClick={addTab}
+            aria-label="Add new tab"
+            title="Add new tab"
+          >
+            +
+          </button>
+        </div>
+
+        {/* Right section: toolbar controls */}
+        <div className="mosaic-tab-toolbar-controls">
+          {tabToolbarControls}
+        </div>
       </div>,
     );
 

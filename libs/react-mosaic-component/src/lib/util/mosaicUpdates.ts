@@ -17,6 +17,7 @@ import {
   isSplitNode,
   isTabsNode,
 } from './mosaicUtilities';
+import { assertNever } from './assertNever';
 
 /**
  * Used to prepare `update` for `immutability-helper`
@@ -213,211 +214,224 @@ export function createDragToUpdates<T extends MosaicKey>(
   const destinationNode = getAndAssertNodeAtPathExists(root, destinationPath);
   const sourceNode = getAndAssertNodeAtPathExists(root, sourcePath);
 
-  // Handle different drop types
-  if (dropInfo.type === 'tab-container' || dropInfo.type === 'tab-reorder') {
-    // --- Dragging INTO a TabContainer ---
-    if (!isTabsNode(destinationNode)) {
-      throw new Error(
-        `Expected tab container at destination path ${destinationPath.join(', ')}, but found: ${JSON.stringify(destinationNode)}`,
+  switch (dropInfo.type) {
+    case 'tab-container':
+    case 'tab-reorder': {
+      // --- Dragging INTO a TabContainer ---
+      if (!isTabsNode(destinationNode)) {
+        throw new Error(
+          `Expected tab container at destination path ${destinationPath.join(', ')}, but found: ${JSON.stringify(destinationNode)}`,
+        );
+      }
+
+      const updates: MosaicUpdate<T>[] = [];
+
+      // Remove source from its current location
+      updates.push(createRemoveUpdate(root, sourcePath));
+
+      // Calculate the adjusted destination path after removal
+      let adjustedDestinationPath = adjustPathAfterRemoval(
+        sourcePath,
+        destinationPath,
       );
-    }
 
-    const updates: MosaicUpdate<T>[] = [];
+      // Get the destination node after the removal to ensure it's still a tabs node
+      const rootAfterRemoval = updateTree(root, updates);
+      let destinationAfterRemoval = getNodeAtPath(
+        rootAfterRemoval,
+        adjustedDestinationPath,
+      );
 
-    // Remove source from its current location
-    updates.push(createRemoveUpdate(root, sourcePath));
-
-    // Calculate the adjusted destination path after removal
-    let adjustedDestinationPath = adjustPathAfterRemoval(
-      sourcePath,
-      destinationPath,
-    );
-
-    // Get the destination node after the removal to ensure it's still a tabs node
-    const rootAfterRemoval = updateTree(root, updates);
-    let destinationAfterRemoval = getNodeAtPath(
-      rootAfterRemoval,
-      adjustedDestinationPath,
-    );
-
-    // If the adjusted path is invalid or doesn't point to a tabs node, find the original tabs node
-    if (!destinationAfterRemoval || !isTabsNode(destinationAfterRemoval)) {
-      // Function to recursively search for a tabs node with matching tabs array
-      function findTabsNodeInTree(
-        node: MosaicNode<T>,
-        currentPath: MosaicPath = [],
-      ): { node: MosaicNode<T>; path: MosaicPath } | null {
-        if (node && typeof node === 'object') {
-          if (
-            isTabsNode(node) &&
-            isTabsNode(destinationNode) &&
-            node.tabs &&
-            JSON.stringify(node.tabs) === JSON.stringify(destinationNode.tabs)
-          ) {
-            return { node, path: currentPath };
-          }
-          if (isSplitNode(node)) {
-            for (let i = 0; i < node.children.length; i++) {
-              const result = findTabsNodeInTree(node.children[i], [
-                ...currentPath,
-                i,
-              ]);
-              if (result) {
-                return result;
+      // If the adjusted path is invalid or doesn't point to a tabs node, find the original tabs node
+      if (!destinationAfterRemoval || !isTabsNode(destinationAfterRemoval)) {
+        // Function to recursively search for a tabs node with matching tabs array
+        function findTabsNodeInTree(
+          node: MosaicNode<T>,
+          currentPath: MosaicPath = [],
+        ): { node: MosaicNode<T>; path: MosaicPath } | null {
+          if (node && typeof node === 'object') {
+            if (
+              isTabsNode(node) &&
+              isTabsNode(destinationNode) &&
+              node.tabs &&
+              JSON.stringify(node.tabs) === JSON.stringify(destinationNode.tabs)
+            ) {
+              return { node, path: currentPath };
+            }
+            if (isSplitNode(node)) {
+              for (let i = 0; i < node.children.length; i++) {
+                const result = findTabsNodeInTree(node.children[i], [
+                  ...currentPath,
+                  i,
+                ]);
+                if (result) {
+                  return result;
+                }
               }
             }
           }
+          return null;
         }
-        return null;
-      }
 
-      // Search for the original tabs node in the tree after removal
-      const result = findTabsNodeInTree(rootAfterRemoval);
-      if (result) {
-        adjustedDestinationPath = result.path;
-        destinationAfterRemoval = result.node;
-      }
-    }
-
-    if (!destinationAfterRemoval || !isTabsNode(destinationAfterRemoval)) {
-      throw new Error(
-        `Could not find tabs container after removal. Original path: ${destinationPath.join(', ')}, Adjusted path: ${adjustedDestinationPath.join(', ')}`,
-      );
-    }
-
-    // Add the dragged node as a new tab
-    if (dropInfo.type === 'tab-reorder') {
-      // Insert at specific index
-      const newTabs = [...destinationAfterRemoval.tabs];
-      newTabs.splice(dropInfo.insertIndex, 0, sourceNode as T);
-
-      updates.push({
-        path: adjustedDestinationPath,
-        spec: {
-          tabs: { $set: newTabs },
-          activeTabIndex: { $set: dropInfo.insertIndex }, // Make the inserted tab active
-        },
-      });
-    } else {
-      // Add to end
-      updates.push({
-        path: adjustedDestinationPath,
-        spec: {
-          tabs: { $push: [sourceNode as T] },
-          activeTabIndex: { $set: destinationAfterRemoval.tabs.length },
-        },
-      });
-    }
-
-    return updates;
-  } else {
-    // --- Split logic ---
-    const updates: MosaicUpdate<T>[] = [];
-
-    // Remove the source node
-    updates.push(createRemoveUpdate(root, sourcePath));
-
-    // Calculate the adjusted destination path after removal
-    let adjustedDestinationPath = adjustPathAfterRemoval(
-      sourcePath,
-      destinationPath,
-    );
-
-    // Get the destination node after the source removal
-    const rootAfterRemoval = updateTree(root, updates);
-
-    // Check if the adjusted destination path is still valid
-    let destinationAfterRemoval = getNodeAtPath(
-      rootAfterRemoval,
-      adjustedDestinationPath,
-    );
-
-    // If the adjusted path is invalid, try to find a valid alternative
-    if (!destinationAfterRemoval) {
-      // Try progressively shorter paths to find a valid parent
-      for (let i = adjustedDestinationPath.length - 1; i >= 0; i--) {
-        const shorterPath = adjustedDestinationPath.slice(0, i);
-        const nodeAtShorterPath = getNodeAtPath(rootAfterRemoval, shorterPath);
-        if (nodeAtShorterPath) {
-          adjustedDestinationPath = shorterPath;
-          destinationAfterRemoval = nodeAtShorterPath;
-          break;
+        // Search for the original tabs node in the tree after removal
+        const result = findTabsNodeInTree(rootAfterRemoval);
+        if (result) {
+          adjustedDestinationPath = result.path;
+          destinationAfterRemoval = result.node;
         }
       }
 
-      // If we still can't find a valid path, fall back to root
-      if (!destinationAfterRemoval) {
-        adjustedDestinationPath = [];
-        destinationAfterRemoval = rootAfterRemoval;
+      if (!destinationAfterRemoval || !isTabsNode(destinationAfterRemoval)) {
+        throw new Error(
+          `Could not find tabs container after removal. Original path: ${destinationPath.join(', ')}, Adjusted path: ${adjustedDestinationPath.join(', ')}`,
+        );
       }
-    }
 
-    if (!destinationAfterRemoval) {
-      console.error(
-        'Could not find valid destination after removing source from:',
+      // Add the dragged node as a new tab
+      if (dropInfo.type === 'tab-reorder') {
+        // Insert at specific index
+        const newTabs = [...destinationAfterRemoval.tabs];
+        newTabs.splice(dropInfo.insertIndex, 0, sourceNode as T);
+
+        updates.push({
+          path: adjustedDestinationPath,
+          spec: {
+            tabs: { $set: newTabs },
+            activeTabIndex: { $set: dropInfo.insertIndex }, // Make the inserted tab active
+          },
+        });
+      } else {
+        // Add to end
+        updates.push({
+          path: adjustedDestinationPath,
+          spec: {
+            tabs: { $push: [sourceNode as T] },
+            activeTabIndex: { $set: destinationAfterRemoval.tabs.length },
+          },
+        });
+      }
+
+      return updates;
+    }
+    case 'split': {
+      // --- Split logic ---
+      const updates: MosaicUpdate<T>[] = [];
+
+      // Remove the source node
+      updates.push(createRemoveUpdate(root, sourcePath));
+
+      // Calculate the adjusted destination path after removal
+      let adjustedDestinationPath = adjustPathAfterRemoval(
         sourcePath,
-        'original destination was:',
         destinationPath,
       );
-      throw new Error(
-        `Could not find valid destination after removing source from [${sourcePath.join(', ')}]`,
+
+      // Get the destination node after the source removal
+      const rootAfterRemoval = updateTree(root, updates);
+
+      // Check if the adjusted destination path is still valid
+      let destinationAfterRemoval = getNodeAtPath(
+        rootAfterRemoval,
+        adjustedDestinationPath,
       );
-    }
 
-    // Determine split direction
-    let direction: MosaicDirection = 'column';
-    if (
-      dropInfo.position === MosaicDropTargetPosition.LEFT ||
-      dropInfo.position === MosaicDropTargetPosition.RIGHT
-    ) {
-      direction = 'row';
-    }
+      // If the adjusted path is invalid, try to find a valid alternative
+      if (!destinationAfterRemoval) {
+        // Try progressively shorter paths to find a valid parent
+        for (let i = adjustedDestinationPath.length - 1; i >= 0; i--) {
+          const shorterPath = adjustedDestinationPath.slice(0, i);
+          const nodeAtShorterPath = getNodeAtPath(
+            rootAfterRemoval,
+            shorterPath,
+          );
+          if (nodeAtShorterPath) {
+            adjustedDestinationPath = shorterPath;
+            destinationAfterRemoval = nodeAtShorterPath;
+            break;
+          }
+        }
 
-    // Check if we can add to an existing split with the same direction
-    if (
-      isSplitNode(destinationAfterRemoval) &&
-      destinationAfterRemoval.direction === direction
-    ) {
-      // Insert at the correct index
-      const insertIndex =
-        dropInfo.position === MosaicDropTargetPosition.LEFT ||
-        dropInfo.position === MosaicDropTargetPosition.TOP
-          ? 0
-          : destinationAfterRemoval.children.length;
-
-      updates.push(
-        createAddChildUpdate(adjustedDestinationPath, sourceNode, insertIndex),
-      );
-    } else {
-      // Create a new split node
-      let first: MosaicNode<T>;
-      let second: MosaicNode<T>;
-
-      if (
-        dropInfo.position === MosaicDropTargetPosition.LEFT ||
-        dropInfo.position === MosaicDropTargetPosition.TOP
-      ) {
-        first = sourceNode;
-        second = destinationAfterRemoval;
-      } else {
-        first = destinationAfterRemoval;
-        second = sourceNode;
+        // If we still can't find a valid path, fall back to root
+        if (!destinationAfterRemoval) {
+          adjustedDestinationPath = [];
+          destinationAfterRemoval = rootAfterRemoval;
+        }
       }
 
-      updates.push({
-        path: adjustedDestinationPath,
-        spec: {
-          $set: {
-            type: 'split',
-            direction,
-            children: [first, second],
-            splitPercentages: [50, 50],
+      if (!destinationAfterRemoval) {
+        console.error(
+          'Could not find valid destination after removing source from:',
+          sourcePath,
+          'original destination was:',
+          destinationPath,
+        );
+        throw new Error(
+          `Could not find valid destination after removing source from [${sourcePath.join(', ')}]`,
+        );
+      }
+
+      // Determine split direction
+      let direction: MosaicDirection = 'column';
+      if (
+        dropInfo.position === MosaicDropTargetPosition.LEFT ||
+        dropInfo.position === MosaicDropTargetPosition.RIGHT
+      ) {
+        direction = 'row';
+      }
+
+      // Check if we can add to an existing split with the same direction
+      if (
+        isSplitNode(destinationAfterRemoval) &&
+        destinationAfterRemoval.direction === direction
+      ) {
+        // Insert at the correct index
+        const insertIndex =
+          dropInfo.position === MosaicDropTargetPosition.LEFT ||
+          dropInfo.position === MosaicDropTargetPosition.TOP
+            ? 0
+            : destinationAfterRemoval.children.length;
+
+        updates.push(
+          createAddChildUpdate(
+            adjustedDestinationPath,
+            sourceNode,
+            insertIndex,
+          ),
+        );
+      } else {
+        // Create a new split node
+        let first: MosaicNode<T>;
+        let second: MosaicNode<T>;
+
+        if (
+          dropInfo.position === MosaicDropTargetPosition.LEFT ||
+          dropInfo.position === MosaicDropTargetPosition.TOP
+        ) {
+          first = sourceNode;
+          second = destinationAfterRemoval;
+        } else {
+          first = destinationAfterRemoval;
+          second = sourceNode;
+        }
+
+        updates.push({
+          path: adjustedDestinationPath,
+          spec: {
+            $set: {
+              type: 'split',
+              direction,
+              children: [first, second],
+              splitPercentages: [50, 50],
+            },
           },
-        },
-      });
+        });
+      }
+
+      return updates;
     }
 
-    return updates;
+    default:
+      assertNever(dropInfo);
   }
 }
 

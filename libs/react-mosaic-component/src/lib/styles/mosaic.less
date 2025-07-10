@@ -135,10 +135,26 @@
   .mosaic-tab-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     position: relative;
     flex-shrink: 0;
     z-index: 4;
     gap: 4px;
+  }
+
+  .mosaic-tab-bar-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0; // Allow shrinking
+  }
+
+  .mosaic-tab-toolbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0; // Don't shrink the controls
   }
 
   .mosaic-tile {

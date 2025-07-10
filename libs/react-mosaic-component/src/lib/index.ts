@@ -63,6 +63,7 @@ export {
   getParentPath,
 } from './util/mosaicUtilities';
 export { MosaicWindow, type MosaicWindowProps } from './MosaicWindow';
+export { MosaicTabs, type MosaicTabsProps } from './MosaicTabs';
 export {
   createDefaultToolbarButton,
   DefaultToolbarButton,
@@ -75,9 +76,13 @@ export { ReplaceButton } from './buttons/ReplaceButton';
 export { SplitButton } from './buttons/SplitButton';
 export { RemoveButton } from './buttons/RemoveButton';
 export { AddTabButton } from './buttons/AddTabButton';
+export { TabSplitButton } from './buttons/TabSplitButton';
+export { TabRemoveButton } from './buttons/TabRemoveButton';
+export { TabExpandButton } from './buttons/TabExpandButton';
 export { DraggableTab, type DraggableTabProps } from './DraggableTab';
 export {
-  DEFAULT_CONTROLS_IN_TABS,
-  DEFAULT_CONTROLS_WITH_CREATION,
-  DEFAULT_CONTROLS_WITHOUT_CREATION,
+  DEFAULT_PANEL_CONTROLS_IN_TABS as DEFAULT_CONTROLS_IN_TABS,
+  DEFAULT_PANEL_CONTROLS_WITH_CREATION as DEFAULT_CONTROLS_WITH_CREATION,
+  DEFAULT_PANEL_CONTROLS_WITHOUT_CREATION as DEFAULT_CONTROLS_WITHOUT_CREATION,
+  createDefaultTabsControls,
 } from './buttons/defaultToolbarControls';
