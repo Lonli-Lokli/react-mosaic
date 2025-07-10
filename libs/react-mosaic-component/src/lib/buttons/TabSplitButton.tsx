@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import { noop } from 'lodash-es';
 import React from 'react';
 
-import { MosaicContext, MosaicRootActions } from '../contextTypes';
-import { MosaicKey, MosaicPath } from '../types';
+import { MosaicContext } from '../contextTypes';
+import { MosaicPath } from '../types';
 import { OptionalBlueprint } from '../util/OptionalBlueprint';
 import { DefaultToolbarButton, MosaicButtonProps } from './MosaicButton';
 

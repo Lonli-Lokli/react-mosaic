@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 
 import { MosaicContext } from '../contextTypes';
-import { MosaicKey, MosaicPath } from '../types';
+import { MosaicPath } from '../types';
 import { OptionalBlueprint } from '../util/OptionalBlueprint';
 import { DefaultToolbarButton, MosaicButtonProps } from './MosaicButton';
 
