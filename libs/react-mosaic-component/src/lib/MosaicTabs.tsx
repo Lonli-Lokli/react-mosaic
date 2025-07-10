@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { isEqual } from 'lodash-es';
+import { Cross } from '@blueprintjs/icons';
 import {
   MosaicKey,
   MosaicTabsNode,
@@ -11,6 +12,7 @@ import {
   MosaicDragType,
   TabTitleRenderer,
   TabButtonRenderer,
+  TabCanCloseFunction,
 } from './types';
 import { BoundingBox, boundingBoxAsStyles } from './util/BoundingBox';
 import { MosaicContext, MosaicRootActions } from './contextTypes';
@@ -29,6 +31,7 @@ export interface MosaicTabsProps<T extends MosaicKey> {
   renderTabTitle?: TabTitleRenderer<T>;
   renderTabButton?: TabButtonRenderer<T>;
   tabToolbarControls?: React.ReactNode;
+  canClose?: TabCanCloseFunction<T>;
 }
 
 // Default tab button using DraggableTab with professional styling
@@ -41,6 +44,9 @@ const DefaultTabButton = <T extends MosaicKey>({
   onTabClick,
   mosaicActions,
   renderTabTitle = ({ tabKey }) => `Tab ${tabKey}`,
+  canClose = () => 'canClose',
+  onTabClose,
+  tabs,
 }: {
   tabKey: T;
   index: number;
@@ -50,8 +56,19 @@ const DefaultTabButton = <T extends MosaicKey>({
   onTabClick: () => void;
   mosaicActions: MosaicRootActions<T>;
   renderTabTitle?: TabTitleRenderer<T>;
+  canClose?: TabCanCloseFunction<T>;
+  onTabClose?: (tabKey: T, index: number) => void;
+  tabs: T[];
 }) => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleCloseClick = (event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent tab click
+    onTabClose?.(tabKey, index);
+  };
+
+  // Get the close state
+  const closeState = canClose(tabKey, tabs, index, path);
 
   return (
     <DraggableTab
@@ -72,7 +89,23 @@ const DefaultTabButton = <T extends MosaicKey>({
             onClick={onTabClick}
             title={`${tabKey}`}
           >
-            {renderTabTitle({ tabKey, path, isActive, index, mosaicId })}
+            <span className="mosaic-tab-button-content">
+              {renderTabTitle({ tabKey, path, isActive, index, mosaicId })}
+            </span>
+            {closeState !== 'noClose' && (
+              <span
+                className={classNames('mosaic-tab-close-button', {
+                  '-can-close': closeState === 'canClose',
+                  '-cannot-close': closeState === 'cannotClose',
+                  '-active-tab': isActive,
+                  '-inactive-tab': !isActive,
+                })}
+                onClick={closeState === 'canClose' ? handleCloseClick : undefined}
+                title={closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'}
+              >
+                <Cross size={10} />
+              </span>
+            )}
           </button>
         );
 
@@ -168,6 +201,7 @@ export const MosaicTabs = <T extends MosaicKey>({
   renderTabTitle,
   renderTabButton,
   tabToolbarControls = createDefaultTabsControls(path),
+  canClose,
 }: MosaicTabsProps<T>) => {
   const { mosaicActions, mosaicId } = React.useContext<MosaicContext<T>>(
     MosaicContext as any,
@@ -220,6 +254,53 @@ export const MosaicTabs = <T extends MosaicKey>({
         spec: { activeTabIndex: { $set: index } },
       },
     ]);
+  };
+
+  const onTabClose = (tabKey: T, index: number) => {
+    // Don't close if canClose returns 'cannotClose' or 'noClose'
+    const closeState = canClose ? canClose(tabKey, tabs, index, path) : 'noClose';
+    if (closeState !== 'canClose') {
+      return;
+    }
+
+    // If there's only one tab left, don't close it (but it should not happen)
+    if (tabs.length <= 1) {
+      return;
+    }
+
+    // Remove the tab from the tabs array
+    const newTabs = tabs.filter((_, i) => i !== index);
+    
+    // Adjust activeTabIndex if necessary
+    let newActiveTabIndex = activeTabIndex;
+    if (index === activeTabIndex) {
+      // If closing the active tab, set the previous tab as active, or the first tab if it was the first tab
+      newActiveTabIndex = Math.max(0, index - 1);
+    } else if (index < activeTabIndex) {
+      // If closing a tab before the active tab, decrease the active tab index
+      newActiveTabIndex = activeTabIndex - 1;
+    }
+
+    // Update the tree
+    const updates = [
+      {
+        path,
+        spec: {
+          tabs: { $set: newTabs },
+          activeTabIndex: { $set: newActiveTabIndex },
+        },
+      },
+    ];
+
+    let newTree = mosaicActions.getRoot();
+    if (!newTree) return;
+
+    updates.forEach((update) => {
+      newTree = updateTree(newTree!, [update]);
+    });
+
+    const normalizedTree = normalizeMosaicTree(newTree);
+    mosaicActions.replaceWith([], normalizedTree!);
   };
 
   const addTab = () => {
@@ -291,6 +372,9 @@ export const MosaicTabs = <T extends MosaicKey>({
                   onTabClick={() => onTabClick(index)}
                   mosaicActions={mosaicActions}
                   renderTabTitle={renderTabTitle}
+                  canClose={canClose}
+                  onTabClose={onTabClose}
+                  tabs={tabs}
                 />
 
                 {/* Drop target after each tab */}

@@ -135,6 +135,21 @@ export type TabTitleRenderer<T extends MosaicKey> = (props: {
 }) => React.ReactNode;
 
 /**
+ * The close state of a tab.
+ */
+export type TabCloseState = 'canClose' | 'cannotClose' | 'noClose';
+
+/**
+ * A function that determines whether a tab can be closed.
+ */
+export type TabCanCloseFunction<T extends MosaicKey> = (
+  tabKey: T,
+  tabs: T[],
+  index: number,
+  path: MosaicPath,
+) => TabCloseState;
+
+/**
  * A function that renders the tab button for a tab.
  * If not provided, the DefaultButton will be used.
  */
@@ -146,6 +161,10 @@ export type TabButtonRenderer<T extends MosaicKey> = (props: {
   mosaicId: string;
   onTabClick: () => void;
   mosaicActions: MosaicRootActions<T>;
+  renderTabTitle?: TabTitleRenderer<T>;
+  canClose?: TabCanCloseFunction<T>;
+  onTabClose?: (tabKey: T, index: number) => void;
+  tabs: T[];
 }) => React.ReactElement;
 
 /**

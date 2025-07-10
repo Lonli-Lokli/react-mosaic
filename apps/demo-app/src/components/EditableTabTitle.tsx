@@ -2,7 +2,6 @@ import React from 'react';
 import { EditableTabTitleProps } from '../types/demo-types';
 
 export const EditableTabTitle = ({
-  tabKey,
   title,
   onUpdateTitle,
 }: EditableTabTitleProps) => {

@@ -14,6 +14,7 @@ import {
   TabToolbarRenderer,
   TabTitleRenderer,
   TabButtonRenderer,
+  TabCanCloseFunction,
 } from './types';
 import {
   BoundingBox,
@@ -30,7 +31,8 @@ export interface MosaicRootProps<T extends MosaicKey> {
   renderTabToolbar?: TabToolbarRenderer<T>;
   resize?: ResizeOptions;
   renderTabTitle?: TabTitleRenderer<T>;
-  renderTabButton?: TabButtonRenderer<T>
+  renderTabButton?: TabButtonRenderer<T>;
+  canClose?: TabCanCloseFunction<T>;
 }
 
 export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<
@@ -125,6 +127,7 @@ export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<
             boundingBox={boundingBox}
             renderTabTitle={this.props.renderTabTitle}
             renderTabButton={this.props.renderTabButton}
+            canClose={this.props.canClose}
           />
         );
       }

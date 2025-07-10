@@ -85,13 +85,30 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
             createNode={createNode}
             className={THEMES[this.state.currentTheme]}
             blueprintNamespace="bp5"
-            renderTabTitle={(tabKey, path) => (
+            renderTabTitle={({tabKey}) => (
               <EditableTabTitle
                 tabKey={tabKey}
                 title={this.state.editableTitles[tabKey] || `Window ${tabKey}`}
                 onUpdateTitle={(newTitle) => this.updateTitle(tabKey, newTitle)}
               />
             )}
+            canClose={(tabKey, tabs, index, path) => {
+              // Example close logic:
+              // - Tab 1 cannot be closed (protected)
+              // - Tab 2 has no close button
+              // - Other tabs can be closed normally
+              // - If only one tab remains, it cannot be closed
+              if (tabKey === 1) {
+                return 'cannotClose'; // Protected tab
+              }
+              if (tabKey === 2) {
+                return 'noClose'; // No close button
+              }
+              if (tabs.length <= 1) {
+                return 'cannotClose'; // Last tab cannot be closed
+              }
+              return 'canClose'; // Normal tabs can be closed
+            }}
             //renderTabButton={CustomTabButton} // Now enabled with custom tab buttons
           />
         </div>

@@ -25,6 +25,7 @@ import {
   MosaicDragType,
   TabTitleRenderer,
   TabButtonRenderer,
+  TabCanCloseFunction,
 } from './types';
 import {
   createExpandUpdate,
@@ -59,6 +60,10 @@ export interface MosaicBaseProps<T extends MosaicKey> {
    * Custom tab button renderer
    */
   renderTabButton?: TabButtonRenderer<T>;
+  /**
+   * Function to determine if a tab can be closed
+   */
+  canClose?: TabCanCloseFunction<T>;
 
   createNode?: CreateNode<T>;
   /**
@@ -333,6 +338,7 @@ export class MosaicWithoutDragDropContext<
           resize={resize}
           renderTabTitle={this.props.renderTabTitle}
           renderTabButton={this.props.renderTabButton}
+          canClose={this.props.canClose}
         />
       );
     }

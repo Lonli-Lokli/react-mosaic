@@ -35,6 +35,8 @@ export {
   type TabTitleRenderer,
   type TabButtonRenderer,
   type TabToolbarRenderer,
+  type TabCanCloseFunction,
+  type TabCloseState,
   type LegacyMosaicNode,
   type LegacyMosaicParent,
   type LegacyMosaicKey,
