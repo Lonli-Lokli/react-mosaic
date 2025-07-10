@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { isEqual } from 'lodash-es';
-import { Cross } from '@blueprintjs/icons';
 import {
   MosaicKey,
   MosaicTabsNode,
@@ -19,6 +18,7 @@ import { MosaicContext, MosaicRootActions } from './contextTypes';
 import { MosaicDragItem, MosaicDropData } from './internalTypes';
 import { updateTree } from './util/mosaicUpdates';
 import { normalizeMosaicTree } from './util/mosaicUtilities';
+import { OptionalBlueprint } from './util/OptionalBlueprint';
 import { DraggableTab } from './DraggableTab';
 import { createDefaultTabsControls } from './buttons/defaultToolbarControls';
 
@@ -100,10 +100,14 @@ const DefaultTabButton = <T extends MosaicKey>({
                   '-active-tab': isActive,
                   '-inactive-tab': !isActive,
                 })}
-                onClick={closeState === 'canClose' ? handleCloseClick : undefined}
-                title={closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'}
+                onClick={
+                  closeState === 'canClose' ? handleCloseClick : undefined
+                }
+                title={
+                  closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'
+                }
               >
-                <Cross size={10} />
+                <OptionalBlueprint.Icon size="empty" icon="CROSS" />
               </span>
             )}
           </button>
@@ -258,7 +262,9 @@ export const MosaicTabs = <T extends MosaicKey>({
 
   const onTabClose = (tabKey: T, index: number) => {
     // Don't close if canClose returns 'cannotClose' or 'noClose'
-    const closeState = canClose ? canClose(tabKey, tabs, index, path) : 'noClose';
+    const closeState = canClose
+      ? canClose(tabKey, tabs, index, path)
+      : 'noClose';
     if (closeState !== 'canClose') {
       return;
     }
@@ -270,7 +276,7 @@ export const MosaicTabs = <T extends MosaicKey>({
 
     // Remove the tab from the tabs array
     const newTabs = tabs.filter((_, i) => i !== index);
-    
+
     // Adjust activeTabIndex if necessary
     let newActiveTabIndex = activeTabIndex;
     if (index === activeTabIndex) {

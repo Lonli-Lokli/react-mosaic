@@ -14,7 +14,7 @@ export namespace OptionalBlueprint {
   }: {
     icon: keyof typeof IconNames;
     className?: string;
-    size?: 'standard' | 'large';
+    size?: 'standard' | 'large' | 'empty';
   }) => {
     const { blueprintNamespace } = React.useContext(MosaicContext);
     return (
@@ -22,7 +22,10 @@ export namespace OptionalBlueprint {
         className={classNames(
           className,
           getIconClass(blueprintNamespace, icon),
-          `${blueprintNamespace}-icon-${size}`,
+          {
+            [`${blueprintNamespace}-icon`]: size === 'empty',
+            [`${blueprintNamespace}-icon-${size}`]: size !== 'empty',
+          },
         )}
       />
     );
