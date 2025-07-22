@@ -90,22 +90,18 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
   static defaultProps: Partial<InternalMosaicWindowProps<any>> = {
     additionalControlButtonText: 'More',
     draggable: true,
-    renderPreview: ({ title, children }) => (
+    renderPreview: ({ title }) => (
       <div className="mosaic-preview">
         <div className="mosaic-window-toolbar">
           <div className="mosaic-window-title">{title}</div>
         </div>
         <div className="mosaic-window-body">
-          {children || (
-            <>
-              <h4>{title}</h4>
-              <OptionalBlueprint.Icon
-                className="default-preview-icon"
-                size="large"
-                icon="APPLICATION"
-              />
-            </>
-          )}
+          <h4>{title}</h4>
+          <OptionalBlueprint.Icon
+            className="default-preview-icon"
+            size="large"
+            icon="APPLICATION"
+          />
         </div>
       </div>
     ),
