@@ -1,3 +1,13 @@
+## 0.17.0 (2025-07-22)
+
+### 🩹 Fixes
+
+- do not render children with drag-drop ([1d262ba](https://github.com/Lonli-Lokli/react-mosaic/commit/1d262ba))
+
+### ❤️ Thank You
+
+- Lonli-Lokli @Lonli-Lokli
+
 ## 0.16.0 (2025-07-10)
 
 This was a version bump only, there were no code changes.
