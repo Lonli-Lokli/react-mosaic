@@ -20,8 +20,6 @@ export interface MosaicDropData {
 
 export interface MosaicDragItem {
   mosaicId: string;
-  hideTimer: number;
-  // Additional properties for tab reordering
   isTab?: boolean;
   tabIndex?: number;
   tabKey?: string | number;

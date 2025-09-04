@@ -60,7 +60,6 @@ const DefaultTabButton = <T extends MosaicKey>({
   onTabClose?: (tabKey: T, index: number) => void;
   tabs: T[];
 }) => {
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const handleCloseClick = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent tab click
@@ -78,44 +77,42 @@ const DefaultTabButton = <T extends MosaicKey>({
       mosaicActions={mosaicActions}
       mosaicId={mosaicId}
     >
-      {({ isDragging, connectDragSource, connectDragPreview }) => {
-        const element = (
-          <button
-            ref={buttonRef}
-            className={classNames('mosaic-tab-button', {
-              '-active': isActive,
-              '-dragging': isDragging,
-            })}
-            onClick={onTabClick}
-            title={`${tabKey}`}
-          >
-            <span className="mosaic-tab-button-content">
-              {renderTabTitle({ tabKey, path, isActive, index, mosaicId })}
+      {({ isDragging, connectDragSource, connectDragPreview }) => (
+        <button
+          className={classNames('mosaic-tab-button', {
+            '-active': isActive,
+            '-dragging': isDragging,
+          })}
+          onClick={onTabClick}
+          title={`${tabKey}`}
+          ref={(node) => {
+            connectDragSource(node);
+            connectDragPreview(node);
+          }}
+        >
+          <span className="mosaic-tab-button-content">
+            {renderTabTitle({ tabKey, path, isActive, index, mosaicId })}
+          </span>
+          {closeState !== 'noClose' && (
+            <span
+              className={classNames('mosaic-tab-close-button', {
+                '-can-close': closeState === 'canClose',
+                '-cannot-close': closeState === 'cannotClose',
+                '-active-tab': isActive,
+                '-inactive-tab': !isActive,
+              })}
+              onClick={
+                closeState === 'canClose' ? handleCloseClick : undefined
+              }
+              title={
+                closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'
+              }
+            >
+              <OptionalBlueprint.Icon size="empty" icon="CROSS" />
             </span>
-            {closeState !== 'noClose' && (
-              <span
-                className={classNames('mosaic-tab-close-button', {
-                  '-can-close': closeState === 'canClose',
-                  '-cannot-close': closeState === 'cannotClose',
-                  '-active-tab': isActive,
-                  '-inactive-tab': !isActive,
-                })}
-                onClick={
-                  closeState === 'canClose' ? handleCloseClick : undefined
-                }
-                title={
-                  closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'
-                }
-              >
-                <OptionalBlueprint.Icon size="empty" icon="CROSS" />
-              </span>
-            )}
-          </button>
-        );
-
-        const previewElement = connectDragPreview(element);
-        return connectDragSource(previewElement || element) || element;
-      }}
+          )}
+        </button>
+      )}
     </DraggableTab>
   );
 };
@@ -422,18 +419,19 @@ export const MosaicTabs = <T extends MosaicKey>({
       {/* Use the custom toolbar renderer if provided, otherwise use our default */}
       {renderTabToolbar
         ? renderTabToolbar({
-            tabs,
-            activeTabIndex,
-            path,
-            DraggableTab: (props) => (
-              <DraggableTab
-                {...props}
-                tabContainerPath={path}
-                mosaicActions={mosaicActions}
-                mosaicId={mosaicId}
-              />
-            ),
-          })
+          tabs,
+          activeTabIndex,
+          path,
+          DraggableTab: (props) => (
+            <DraggableTab
+              key={props.tabKey}
+              {...props}
+              tabContainerPath={path}
+              mosaicActions={mosaicActions}
+              mosaicId={mosaicId}
+            />
+          ),
+        })
         : renderDefaultToolbar()}
 
       {connectDropTarget(

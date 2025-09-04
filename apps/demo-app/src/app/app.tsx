@@ -87,6 +87,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
             blueprintNamespace="bp5"
             renderTabTitle={({tabKey}) => (
               <EditableTabTitle
+                key={tabKey}
                 tabKey={tabKey}
                 title={this.state.editableTitles[tabKey] || `Window ${tabKey}`}
                 onUpdateTitle={(newTitle) => this.updateTitle(tabKey, newTitle)}

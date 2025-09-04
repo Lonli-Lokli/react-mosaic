@@ -14,18 +14,18 @@ export const DEFAULT_PANEL_CONTROLS_IN_TABS = React.Children.toArray([
 
 export const createDefaultTabsControls = (path: MosaicPath) =>
   React.Children.toArray([
-    <TabSplitButton path={path} />,
-    <TabRemoveButton path={path} />,
+    <TabSplitButton path={path} key="tab-split-btn" />,
+    <TabRemoveButton path={path} key="tab-remove-btn" />,
   ]);
 
 export const DEFAULT_PANEL_CONTROLS_WITH_CREATION = React.Children.toArray([
-  <ReplaceButton />,
-  <SplitButton />,
-  <AddTabButton />,
-  <ExpandButton />,
-  <RemoveButton />,
+  <ReplaceButton key="replace-btn" />,
+  <SplitButton key="split-btn" />,
+  <AddTabButton key="add-tab-btn" />,
+  <ExpandButton key="expand-btn" />,
+  <RemoveButton key="remove-btn" />,
 ]);
 export const DEFAULT_PANEL_CONTROLS_WITHOUT_CREATION = React.Children.toArray([
-  <ExpandButton />,
-  <RemoveButton />,
+  <ExpandButton key="expand-btn" />,
+  <RemoveButton key="remove-btn" />,
 ]);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDrag, DragSourceMonitor } from 'react-dnd';
+import { useDrag, DragSourceMonitor, ConnectDragSource, ConnectDragPreview } from 'react-dnd';
 import { isEqual } from 'lodash-es';
 import { MosaicKey, MosaicTabsNode, MosaicPath, MosaicDragType } from './types';
 import { MosaicDragItem, MosaicDropData } from './internalTypes';
@@ -15,12 +15,8 @@ export interface DraggableTabProps<T extends MosaicKey> {
   mosaicId: string;
   children: (dragProps: {
     isDragging: boolean;
-    connectDragSource: (
-      element: React.ReactElement,
-    ) => React.ReactElement | null;
-    connectDragPreview: (
-      element: React.ReactElement,
-    ) => React.ReactElement | null;
+    connectDragSource: ConnectDragSource;
+    connectDragPreview: ConnectDragPreview;
   }) => React.ReactElement;
 }
 
@@ -41,12 +37,10 @@ export const DraggableTab = <T extends MosaicKey>({
   const [{ isDragging }, connectDragSource, connectDragPreview] = useDrag({
     type: MosaicDragType.WINDOW,
     item: (): MosaicDragItem => {
-      const hideTimer = window.setTimeout(() => {
-        mosaicActions.hide(tabPath, true); // suppressOnChange = true for drag operations
-      }, 50);
+        mosaicActions.hide(tabPath, true);
+    
       return {
         mosaicId,
-        hideTimer,
         // Add additional properties for tab reordering
         isTab: true,
         tabIndex,
@@ -54,8 +48,7 @@ export const DraggableTab = <T extends MosaicKey>({
         tabContainerPath,
       };
     },
-    end: (item: MosaicDragItem, monitor: DragSourceMonitor) => {
-      window.clearTimeout(item.hideTimer);
+    end: (_, monitor: DragSourceMonitor) => {
       const dropResult = monitor.getDropResult<MosaicDropData>();
       const didDrop = monitor.didDrop();
 

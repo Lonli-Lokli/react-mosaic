@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { drop, isEqual, values } from 'lodash-es';
-import React, { useContext, ReactElement } from 'react';
+import React, { useContext, ReactElement, createRef } from 'react';
 import {
   ConnectDragPreview,
   ConnectDragSource,
@@ -55,11 +55,11 @@ export interface MosaicWindowProps<T extends MosaicKey> {
   draggable?: boolean;
   renderPreview?: (props: MosaicWindowProps<T>) => ReactElement;
   renderToolbar?:
-    | ((
-        props: MosaicWindowProps<T>,
-        draggable: boolean | undefined,
-      ) => ReactElement)
-    | null;
+  | ((
+    props: MosaicWindowProps<T>,
+    draggable: boolean | undefined,
+  ) => ReactElement)
+  | null;
   onDragStart?: () => void;
   onDragEnd?: (type: 'drop' | 'reset') => void;
 }
@@ -114,7 +114,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     additionalControlsOpen: false,
   };
 
-  private rootElement: HTMLElement | null = null;
+  private rootElement = createRef<HTMLDivElement>();
 
   render() {
     const {
@@ -135,46 +135,45 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
 
     return (
       <MosaicWindowContext.Provider value={this.childContext}>
-        {connectDropTarget(
-          <div
-            className={classNames(
-              'mosaic-window',
-              'mosaic-drop-target',
-              className,
-              {
-                'drop-target-hover':
-                  isOver && draggedMosaicId === this.context.mosaicId,
-                'additional-controls-open': this.state.additionalControlsOpen,
-              },
-            )}
-            ref={(element) => {
-              this.rootElement = element;
-            }}
-          >
-            {this.renderToolbar()}
-            <div className="mosaic-window-body">{this.props.children}</div>
-            {!disableAdditionalControlsOverlay && (
-              <div
-                className="mosaic-window-body-overlay"
-                onClick={() => {
-                  this.setAdditionalControlsOpen(false);
-                }}
-              />
-            )}
-            <div className="mosaic-window-additional-actions-bar">
-              {additionalControls}
+        <div
+          className={classNames(
+            'mosaic-window',
+            'mosaic-drop-target',
+            className,
+            {
+              'drop-target-hover':
+                isOver && draggedMosaicId === this.context.mosaicId,
+              'additional-controls-open': this.state.additionalControlsOpen,
+            },
+          )}
+          ref={node => {
+            this.rootElement.current = node;
+            connectDropTarget(node);
+          }}
+        >
+          {this.renderToolbar()}
+          <div className="mosaic-window-body">{this.props.children}</div>
+          {!disableAdditionalControlsOverlay && (
+            <div
+              className="mosaic-window-body-overlay"
+              onClick={() => {
+                this.setAdditionalControlsOpen(false);
+              }}
+            />
+          )}
+          <div className="mosaic-window-additional-actions-bar">
+            {additionalControls}
+          </div>
+          {connectDragPreview(renderPreview!(this.props))}
+          {/* Only render individual drop targets if NOT inside a tab container */}
+          {!isInTabContainer && (
+            <div className={classNames('drop-target-container', {})}>
+              {values<MosaicDropTargetPosition>(MosaicDropTargetPosition).map(
+                this.renderDropTarget,
+              )}
             </div>
-            {connectDragPreview(renderPreview!(this.props))}
-            {/* Only render individual drop targets if NOT inside a tab container */}
-            {!isInTabContainer && (
-              <div className={classNames('drop-target-container', {})}>
-                {values<MosaicDropTargetPosition>(MosaicDropTargetPosition).map(
-                  this.renderDropTarget,
-                )}
-              </div>
-            )}
-          </div>,
-        )}
+          )}
+        </div>
       </MosaicWindowContext.Provider>
     );
   }
@@ -236,7 +235,7 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
       <div title={title} className="mosaic-window-title">
         {title}
       </div>,
-    )!;
+    );
 
     const hasAdditionalControls = !!additionalControls;
 
@@ -316,7 +315,9 @@ export class InternalMosaicWindow<T extends MosaicKey> extends React.Component<
     }
 
     const direction: MosaicDirection =
-      this.rootElement!.offsetWidth > this.rootElement!.offsetHeight
+      this.rootElement.current &&
+        this.rootElement.current.offsetWidth >
+        this.rootElement.current.offsetHeight
         ? 'row'
         : 'column';
 
@@ -461,19 +462,12 @@ function ConnectedInternalMosaicWindow<T extends MosaicKey = string>(
       if (props.onDragStart) {
         props.onDragStart();
       }
-      // Add a small delay to allow the drag preview to be captured before hiding
-      const hideTimer = window.setTimeout(() => {
-        mosaicActions.hide(props.path, true); // suppressOnChange = true for drag operations
-      }, 50);
+      mosaicActions.hide(props.path, true);
       return {
         mosaicId,
-        hideTimer,
       };
     },
-    end: (item, monitor) => {
-      // If the hide call hasn't happened yet, cancel it
-      window.clearTimeout(item.hideTimer);
-
+    end: (_, monitor) => {
       const ownPath = props.path;
       const dropResult: MosaicDropData = (monitor.getDropResult() ||
         {}) as MosaicDropData;
@@ -518,15 +512,15 @@ function ConnectedInternalMosaicWindow<T extends MosaicKey = string>(
           destinationPath,
           dropResult.tabReorderIndex !== undefined
             ? {
-                type: 'tab-reorder',
-                insertIndex: dropResult.tabReorderIndex,
-              }
+              type: 'tab-reorder',
+              insertIndex: dropResult.tabReorderIndex,
+            }
             : position === undefined
               ? { type: 'tab-container' }
               : {
-                  type: 'split',
-                  position,
-                },
+                type: 'split',
+                position,
+              },
         );
         mosaicActions.updateTree(updates, {
           shouldNormalize: true,
@@ -574,3 +568,4 @@ export class MosaicWindow<
     );
   }
 }
+
