@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { drop, isEqual, values } from 'lodash-es';
+import { defer, drop, isEqual, values } from 'lodash-es';
 import React, { useContext, ReactElement, createRef } from 'react';
 import {
   ConnectDragPreview,
@@ -462,12 +462,18 @@ function ConnectedInternalMosaicWindow<T extends MosaicKey = string>(
       if (props.onDragStart) {
         props.onDragStart();
       }
-      mosaicActions.hide(props.path, true);
+      // TODO: Actually just delete instead of hiding
+      // The defer is necessary as the element must be present on start for HTML DnD to not cry
+      const hideTimer = defer(() => mosaicActions.hide(props.path));
       return {
         mosaicId,
+        hideTimer,
       };
     },
-    end: (_, monitor) => {
+    end: ({ hideTimer }, monitor) => {
+      // If the hide call hasn't happened yet, cancel it
+      window.clearTimeout(hideTimer);
+
       const ownPath = props.path;
       const dropResult: MosaicDropData = (monitor.getDropResult() ||
         {}) as MosaicDropData;

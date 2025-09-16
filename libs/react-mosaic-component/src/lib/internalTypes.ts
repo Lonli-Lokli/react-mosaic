@@ -24,6 +24,7 @@ export interface MosaicDragItem {
   tabIndex?: number;
   tabKey?: string | number;
   tabContainerPath?: MosaicPath;
+  hideTimer?: number;
 }
 
 // Union type for different drop scenarios

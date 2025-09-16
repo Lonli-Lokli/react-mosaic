@@ -1,3 +1,7 @@
+## 0.19.0 (2025-09-16)
+
+This was a version bump only, there were no code changes.
+
 ## 0.18.0 (2025-09-04)
 
 This was a version bump only, there were no code changes.
