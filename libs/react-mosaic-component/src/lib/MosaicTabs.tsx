@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { isEqual } from 'lodash-es';
+import { useDrop, useDrag, DropTargetMonitor } from 'react-dnd';
+import { defer, drop as _drop, isEqual } from 'lodash-es';
 import {
   MosaicKey,
   MosaicTabsNode,
@@ -16,8 +16,8 @@ import {
 import { BoundingBox, boundingBoxAsStyles } from './util/BoundingBox';
 import { MosaicContext, MosaicRootActions } from './contextTypes';
 import { MosaicDragItem, MosaicDropData } from './internalTypes';
-import { updateTree } from './util/mosaicUpdates';
-import { normalizeMosaicTree } from './util/mosaicUtilities';
+import { updateTree, createDragToUpdates } from './util/mosaicUpdates';
+import { normalizeMosaicTree, getNodeAtPath, isTabsNode } from './util/mosaicUtilities';
 import { OptionalBlueprint } from './util/OptionalBlueprint';
 import { DraggableTab } from './DraggableTab';
 import { createDefaultTabsControls } from './buttons/defaultToolbarControls';
@@ -209,6 +209,82 @@ export const MosaicTabs = <T extends MosaicKey>({
   );
   const { tabs, activeTabIndex } = node;
 
+  // Add drag functionality for the entire tab container
+  const [, connectDragSource, connectDragPreview] = useDrag<
+    MosaicDragItem,
+    void,
+    object
+  >({
+    type: MosaicDragType.WINDOW,
+    item: (): MosaicDragItem => {
+      // Hide the tab container when dragging starts
+      // The defer is necessary as the element must be present on start for HTML DnD to not cry
+      const hideTimer = defer(() => mosaicActions.hide(path));
+      return {
+        mosaicId,
+        hideTimer,
+      };
+    },
+    end: ({ hideTimer }, monitor) => {
+      // If the hide call hasn't happened yet, cancel it
+      window.clearTimeout(hideTimer);
+
+      const ownPath = path;
+      const dropResult: MosaicDropData = (monitor.getDropResult() ||
+        {}) as MosaicDropData;
+      const { position, path: destinationPath } = dropResult;
+
+      // A drop is successful if we have a destination path
+      const dropped = destinationPath != null;
+      const isSelfDrop = dropped && isEqual(destinationPath, ownPath);
+
+      // Check for tab container self-drop: when dragging from a tab and dropping back into the same tab container
+      const isTabContainerSelfDrop =
+        dropped &&
+        (() => {
+          const root = mosaicActions.getRoot();
+          const destinationNode = getNodeAtPath(root, destinationPath);
+
+          // If destination is the same tab container
+          return isTabsNode(destinationNode) && isEqual(ownPath, destinationPath);
+        })();
+
+      const isChildDrop =
+        dropped &&
+        destinationPath.length > ownPath.length &&
+        isEqual(
+          ownPath,
+          _drop(destinationPath, destinationPath.length - ownPath.length),
+        );
+
+      if (dropped && !isSelfDrop && !isChildDrop && !isTabContainerSelfDrop) {
+        // Successful drop, let createDragToUpdates handle the logic
+        const updates = createDragToUpdates(
+          mosaicActions.getRoot()!,
+          ownPath,
+          destinationPath,
+          dropResult.tabReorderIndex !== undefined
+            ? {
+                type: 'tab-reorder',
+                insertIndex: dropResult.tabReorderIndex,
+              }
+            : position === undefined
+              ? { type: 'tab-container' }
+              : {
+                  type: 'split',
+                  position,
+                },
+        );
+        mosaicActions.updateTree(updates, {
+          shouldNormalize: true,
+        });
+      } else {
+        // Canceled or invalid drop, restore the component by showing it again
+        mosaicActions.show(ownPath, true); // suppressOnChange = true for drag operations
+      }
+    },
+  });
+
   // Drop target for the tab content area - blocks individual window drop targets
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, connectDropTarget] = useDrop({
@@ -344,12 +420,23 @@ export const MosaicTabs = <T extends MosaicKey>({
     });
   };
 
-  const renderDefaultToolbar = () =>
-    connectTabBarDropTarget(
+  const renderDefaultToolbar = () => {
+    // Allow dragging the entire tab container from the drag handle area
+    const isDragAllowed = path.length > 0;
+
+    // Create a draggable handle area (empty space that can be grabbed)
+    const dragHandle = isDragAllowed ? (
+      connectDragSource(
+        <div className="mosaic-tab-drag-handle" title="Drag to move tab container" />
+      )
+    ) : null;
+
+    return connectTabBarDropTarget(
       <div
         className={classNames('mosaic-tab-bar', {
           'tab-bar-drop-target-hover':
             isTabBarOver && tabBarDraggedMosaicId === mosaicId,
+          draggable: isDragAllowed,
         })}
       >
         {/* Left section: tabs and add button */}
@@ -401,13 +488,49 @@ export const MosaicTabs = <T extends MosaicKey>({
           </button>
         </div>
 
+        {/* Draggable handle area (flex-grows to fill space) */}
+        {dragHandle}
+
         {/* Right section: toolbar controls */}
         <div className="mosaic-tab-toolbar-controls">{tabToolbarControls}</div>
       </div>,
     );
+  };
 
   const activeTabKey = tabs[activeTabIndex];
   const tilePath = path.concat(activeTabIndex);
+
+  // Drag preview for the entire tab container
+  const renderPreview = () => (
+    <div className="mosaic-preview">
+      <div className="mosaic-tab-bar">
+        <div className="mosaic-tab-bar-tabs">
+          {tabs.map((tabKey, index) => (
+            <button
+              key={tabKey}
+              className={classNames('mosaic-tab-button', {
+                '-active': index === activeTabIndex,
+              })}
+            >
+              <span className="mosaic-tab-button-content">
+                {renderTabTitle
+                  ? renderTabTitle({ tabKey, path, isActive: index === activeTabIndex, index, mosaicId })
+                  : `Tab ${tabKey}`}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mosaic-window-body">
+        <h4>Tab Container</h4>
+        <OptionalBlueprint.Icon
+          className="default-preview-icon"
+          size="large"
+          icon="APPLICATION"
+        />
+      </div>
+    </div>
+  );
 
   return (
     // This is the container for the entire tab group.
@@ -437,6 +560,9 @@ export const MosaicTabs = <T extends MosaicKey>({
       {connectDropTarget(
         <div className="mosaic-tile">{renderTile(activeTabKey, tilePath)}</div>,
       )}
+
+      {/* Drag preview for the entire tab container */}
+      {connectDragPreview(renderPreview())}
     </div>
   );
 };

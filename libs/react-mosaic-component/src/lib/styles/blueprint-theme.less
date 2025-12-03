@@ -103,6 +103,66 @@
     }
   }
 
+  // Tab styling
+  .mosaic-tabs-container {
+    box-shadow: @pt-elevation-shadow-0;
+    border-radius: @pt-border-radius;
+
+    .mosaic-tab-bar {
+      box-shadow: 0 1px 1px @pt-divider-black;
+      border-top-right-radius: @pt-border-radius;
+      border-top-left-radius: @pt-border-radius;
+    }
+
+    .mosaic-tab-drag-handle:hover {
+      background: linear-gradient(to bottom, @white, @light-gray5);
+    }
+
+    .mosaic-tile {
+      background: @pt-app-background-color;
+      border-bottom-right-radius: @pt-border-radius;
+      border-bottom-left-radius: @pt-border-radius;
+    }
+  }
+
+  .mosaic-tab-button {
+    color: @gray1;
+
+    &:hover {
+      color: @dark-gray5;
+    }
+
+    &.-active {
+      color: @dark-gray5;
+      border-bottom-color: @blue3;
+    }
+
+    .mosaic-tab-close-button {
+      color: @gray1;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      &.-can-close:hover {
+        color: @dark-gray5;
+        background: fade(@red3, 10%);
+      }
+
+      &.-cannot-close {
+        color: @gray3;
+      }
+    }
+  }
+
+  .mosaic-tab-add-button {
+    color: @gray1;
+
+    &:hover {
+      color: @blue3;
+    }
+  }
+
   &.@{ns}-dark {
     background: @dark-gray2;
 
@@ -181,6 +241,61 @@
         h4 {
           color: @light-gray4;
         }
+      }
+    }
+
+    // Tab dark theme styling
+    .mosaic-tabs-container {
+      box-shadow: @pt-dark-elevation-shadow-0;
+
+      .mosaic-tab-bar {
+        box-shadow: 0 1px 1px @pt-dark-divider-black;
+      }
+
+      .mosaic-tab-drag-handle:hover {
+        background: linear-gradient(to bottom, @dark-gray5, @dark-gray4);
+      }
+
+      .mosaic-tile {
+        background: @pt-dark-app-background-color;
+      }
+    }
+
+    .mosaic-tab-button {
+      color: @gray4;
+
+      &:hover {
+        color: @light-gray2;
+      }
+
+      &.-active {
+        color: @light-gray2;
+        border-bottom-color: @blue3;
+      }
+
+      .mosaic-tab-close-button {
+        color: @gray4;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        &.-can-close:hover {
+          color: @light-gray2;
+          background: fade(@red3, 20%);
+        }
+
+        &.-cannot-close {
+          color: @gray2;
+        }
+      }
+    }
+
+    .mosaic-tab-add-button {
+      color: @gray4;
+
+      &:hover {
+        color: @blue3;
       }
     }
   }

@@ -132,6 +132,19 @@
   flex-direction: column;
   overflow: hidden;
 
+  // Drag preview for tab containers
+  .mosaic-preview {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+    border: 1px solid black;
+    max-height: 400px;
+    pointer-events: none; // Make sure it doesn't interfere with mouse events
+    opacity: 0; // Hide by default, react-dnd will handle showing during drag
+    visibility: hidden; // Completely hide it from layout
+  }
+
   .mosaic-tab-bar {
     display: flex;
     align-items: center;
@@ -140,14 +153,34 @@
     flex-shrink: 0;
     z-index: 4;
     gap: 4px;
+
+    // Draggable styling is now handled by .mosaic-tab-drag-handle
   }
 
   .mosaic-tab-bar-tabs {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-shrink: 0; // Don't shrink the tabs
+  }
+
+  .mosaic-tab-drag-handle {
     flex: 1;
-    min-width: 0; // Allow shrinking
+    min-width: 20px;
+    height: 100%;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 
   .mosaic-tab-toolbar-controls {
@@ -182,7 +215,7 @@
   }
 }
 
-// Simple, compact tab styling
+// Base tab styling (structure only, colors in blueprint-theme.less)
 .mosaic-tab-button {
   background: transparent;
   border: none;
@@ -190,9 +223,8 @@
   margin: 0;
   font-size: 12px;
   font-weight: normal;
-  color: var(--text-muted, #666);
   cursor: pointer;
-  outline: none !important; // Force remove all focus outlines
+  outline: none !important;
   user-select: none;
   white-space: nowrap;
   transition: color 0.1s ease;
@@ -200,27 +232,16 @@
   align-items: center;
   gap: 4px;
 
-  &:hover {
-    color: var(--text-primary, #333);
-  }
-
-  &.-active {
-    color: var(--text-primary, #333);
-    border-bottom: 2px solid var(--accent-color, #007acc);
-  }
-
   &.-dragging {
     opacity: 0.5;
   }
 
-  // Remove focus outline completely
   &:focus {
     outline: none !important;
   }
 
-  // Only show focus for keyboard navigation (when using .focus-visible class)
   &.focus-visible {
-    outline: 2px solid var(--accent-color, #007acc) !important;
+    outline: 2px solid currentColor !important;
     outline-offset: 2px;
   }
 
@@ -244,23 +265,12 @@
 
     &:hover {
       opacity: 1;
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    &.-can-close {
-      color: var(--text-muted, #666);
-      
-      &:hover {
-        color: var(--text-primary, #333);
-        background: rgba(220, 53, 69, 0.1);
-      }
     }
 
     &.-cannot-close {
-      color: var(--text-muted, #999);
       opacity: 0.3;
       cursor: not-allowed;
-      
+
       &:hover {
         opacity: 0.3;
         background: transparent;
@@ -269,39 +279,23 @@
   }
 }
 
-// Auto dark theme support
-.mosaic-blueprint-theme.bp5-dark .mosaic-tab-bar {
-  --bg-secondary: #2d3748;
-  --border-color: #4a5568;
-  --text-primary: #e2e8f0;
-  --text-muted: #a0aec0;
-  --accent-color: #63b3ed;
-}
-
-// Add tab button - minimal
+// Add tab button - minimal (structure only)
 .mosaic-tab-add-button {
   background: transparent;
   border: none;
   padding: 4px 8px;
   margin-left: 8px;
-  color: var(--text-muted, #666);
   cursor: pointer;
   font-size: 14px;
   font-weight: normal;
-  outline: none !important; // Force remove all focus outlines
+  outline: none !important;
 
-  &:hover {
-    color: var(--accent-color, #007acc);
-  }
-
-  // Remove focus outline completely
   &:focus {
     outline: none !important;
   }
 
-  // Only show focus for keyboard navigation (when using .focus-visible class)
   &.focus-visible {
-    outline: 2px solid var(--accent-color, #007acc) !important;
+    outline: 2px solid currentColor !important;
     outline-offset: 2px;
   }
 }
