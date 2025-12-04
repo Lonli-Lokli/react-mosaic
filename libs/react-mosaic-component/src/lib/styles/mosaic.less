@@ -161,7 +161,50 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    flex-shrink: 0; // Don't shrink the tabs
+    flex: 1;
+    min-width: 0; // Allow flex shrinking
+    overflow-x: hidden; // Hide scrollbar by default
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; // Enable smooth momentum scrolling on iOS
+
+    &:hover {
+      overflow-x: auto; // Show scrollbar on hover
+    }
+
+    // Style scrollbar for webkit browsers (Chrome, Safari, Edge)
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    // Firefox scrollbar styling
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &:hover {
+      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    }
+  }
+
+  .mosaic-tab-bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0; // Don't shrink the controls
   }
 
   .mosaic-tab-drag-handle {

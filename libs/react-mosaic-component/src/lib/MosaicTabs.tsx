@@ -439,7 +439,7 @@ export const MosaicTabs = <T extends MosaicKey>({
           draggable: isDragAllowed,
         })}
       >
-        {/* Left section: tabs and add button */}
+        {/* Left section: scrollable tabs only */}
         <div className="mosaic-tab-bar-tabs">
           {/* Drop target at the beginning */}
           <TabDropTarget
@@ -477,7 +477,10 @@ export const MosaicTabs = <T extends MosaicKey>({
               </React.Fragment>
             );
           })}
+        </div>
 
+        {/* Right section: always visible controls (add button, drag handle, toolbar) */}
+        <div className="mosaic-tab-bar-controls">
           <button
             className="mosaic-tab-add-button"
             onClick={addTab}
@@ -486,13 +489,13 @@ export const MosaicTabs = <T extends MosaicKey>({
           >
             +
           </button>
+
+          {/* Draggable handle area */}
+          {dragHandle}
+
+          {/* Toolbar controls */}
+          <div className="mosaic-tab-toolbar-controls">{tabToolbarControls}</div>
         </div>
-
-        {/* Draggable handle area (flex-grows to fill space) */}
-        {dragHandle}
-
-        {/* Right section: toolbar controls */}
-        <div className="mosaic-tab-toolbar-controls">{tabToolbarControls}</div>
       </div>,
     );
   };

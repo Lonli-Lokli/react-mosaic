@@ -5,6 +5,7 @@
 **React Mosaic** is a powerful React component library that provides a tiling window manager for building sophisticated, user-controlled interfaces. Users can dynamically resize, rearrange, and customize panel layouts through an intuitive drag-and-drop interface.
 
 **Key Information:**
+
 - **Package**: `@lonli-lokli/react-mosaic-component`
 - **Version**: 0.20.0
 - **License**: Apache License 2.0
@@ -27,7 +28,7 @@ interface MosaicSplitNode<T> {
   type: 'split';
   direction: 'row' | 'column';
   children: MosaicNode<T>[];
-  splitPercentages?: number[];  // Defaults to equal distribution
+  splitPercentages?: number[]; // Defaults to equal distribution
 }
 
 interface MosaicTabsNode<T> {
@@ -44,6 +45,7 @@ interface MosaicTabsNode<T> {
 #### 2. Path System
 
 Paths are arrays of numbers representing the route to a node in the tree:
+
 - `[]` - Root node
 - `[0]` - First child of root
 - `[1, 2]` - Third child of second child of root
@@ -51,6 +53,7 @@ Paths are arrays of numbers representing the route to a node in the tree:
 #### 3. Drag & Drop System
 
 Built on `react-dnd` with support for:
+
 - HTML5 backend (desktop)
 - Touch backend (mobile)
 - Multi-backend switching (automatic)
@@ -121,33 +124,39 @@ react-mosaic/
 ### Entry Points
 
 **`libs/react-mosaic-component/src/index.ts`** - Public API
+
 - Exports all public components, types, utilities, and context
 - This is the single source of truth for what's publicly available
 
 ### Core Components
 
 **`libs/react-mosaic-component/src/lib/Mosaic.tsx`** - Root Component
+
 - Main entry point for using the library
 - Handles state management (controlled/uncontrolled)
 - Sets up drag-drop context
 - Key props: `renderTile`, `onChange`, `value`/`initialValue`, `className`
 
 **`libs/react-mosaic-component/src/lib/MosaicRoot.tsx`** - Tree Renderer
+
 - Recursive rendering of tree structure
 - Automatically converts legacy binary trees to n-ary format
 - Handles both split nodes and tab nodes
 
 **`libs/react-mosaic-component/src/lib/MosaicWindow.tsx`** - Window Wrapper
+
 - Wraps tile content with title bar and toolbar
 - Provides drag handles for rearranging windows
 - Key props: `title`, `path`, `toolbarControls`, `draggable`
 
 **`libs/react-mosaic-component/src/lib/MosaicTabs.tsx`** - Tab Container
+
 - Renders tabbed interface for multiple panels
 - Handles tab switching and tab dragging
 - Integrates with `DraggableTab` component
 
 **`libs/react-mosaic-component/src/lib/Split.tsx`** - Divider
+
 - Renders resizable split bar between panels
 - Handles mouse/touch drag to resize
 - Supports both horizontal and vertical splits
@@ -155,6 +164,7 @@ react-mosaic/
 ### Type System
 
 **`libs/react-mosaic-component/src/lib/types.ts`** - Public Types
+
 - `MosaicNode<T>`: Union type for tree nodes
 - `MosaicSplitNode<T>`: Split container type
 - `MosaicTabsNode<T>`: Tab container type
@@ -164,6 +174,7 @@ react-mosaic/
 - `MosaicUpdate<T>`: Tree mutation specification
 
 **`libs/react-mosaic-component/src/lib/contextTypes.ts`** - Context Types
+
 - `MosaicContext<T>`: Root context with actions
 - `MosaicRootActions<T>`: Tree manipulation actions
 - `MosaicWindowContext`: Window-specific context
@@ -172,6 +183,7 @@ react-mosaic/
 ### Utilities (CRITICAL)
 
 **`libs/react-mosaic-component/src/lib/util/mosaicUtilities.ts`**
+
 - `isSplitNode(node)`: Type guard for split nodes
 - `isTabsNode(node)`: Type guard for tab nodes
 - `getNodeAtPath(tree, path)`: Get node at specific path
@@ -181,6 +193,7 @@ react-mosaic/
 - `convertLegacyToNary(legacyNode)`: Convert v0.19 binary trees to n-ary
 
 **`libs/react-mosaic-component/src/lib/util/mosaicUpdates.ts`**
+
 - `updateTree(tree, updates)`: Apply mutations to tree
 - `createRemoveUpdate(path)`: Remove node at path
 - `createExpandUpdate(path, percentage)`: Expand node to percentage
@@ -190,6 +203,7 @@ react-mosaic/
 ### Styling
 
 **`libs/react-mosaic-component/src/lib/styles/`** - LESS Stylesheets
+
 - `index.less`: Main entry (imports all others)
 - `mosaic.less`: Core layout styles
 - `mosaic-window.less`: Window/panel styles
@@ -242,11 +256,13 @@ npm run build:watch
 **Location**: `libs/react-mosaic-component/src/lib/util/*.spec.ts`
 
 Key test files:
+
 - `mosaicUtilities.spec.ts`: Tree manipulation tests
 - `mosaicUpdates.spec.ts`: Update operations tests
 - `boundingBox.spec.ts`: Layout calculation tests
 
 Run specific tests:
+
 ```bash
 npm test -- --testNamePattern="Mosaic"
 npm test -- libs/react-mosaic-component/src/lib/util/mosaicUtilities.spec.ts
@@ -414,12 +430,14 @@ When testing:
 **Configuration**: `tsup.config.ts`
 
 Outputs:
+
 - **ESM**: `dist/libs/react-mosaic-component/index.mjs`
 - **CJS**: `dist/libs/react-mosaic-component/index.cjs`
 - **Types**: `dist/libs/react-mosaic-component/index.d.ts`
 - **CSS**: `dist/libs/react-mosaic-component/react-mosaic-component.css`
 
 Build process:
+
 1. TypeScript compilation with esbuild
 2. LESS compilation with autoprefixer
 3. Type definition generation
@@ -437,14 +455,17 @@ Output: `dist/apps/demo-app/`
 ### GitHub Actions Workflows
 
 **`.github/workflows/claude.yml`** - Claude Code Integration
+
 - Triggers on `@claude` mentions in issues/PRs
 - Provides AI assistance for development tasks
 
 **`.github/workflows/deployment.yml`** - Deployment
+
 - Deploys demo app to GitHub Pages
 - Triggers on push to main branch
 
 **`.github/workflows/publish.yaml`** - Publishing
+
 - Publishes library to NPM
 - Triggers on new releases
 
@@ -475,21 +496,25 @@ Output: `dist/apps/demo-app/`
 ### Common Issues
 
 **Build failures**:
+
 - Clear `dist/` and `node_modules/.cache/` directories
 - Run `npm install` to refresh dependencies
 - Check Node.js version (18+ required)
 
 **Type errors**:
+
 - Run `npm run build:lib` to see full type errors
 - Check `tsconfig.lib.json` for type configuration
 - Ensure all imports use correct paths
 
 **Test failures**:
+
 - Run tests individually to isolate issues
 - Check for async timing issues (use `waitFor`)
 - Verify test environment setup (jsdom)
 
 **Styling issues**:
+
 - Ensure CSS is imported in application
 - Check Blueprint CSS is loaded if using Blueprint theme
 - Verify LESS compilation succeeded
@@ -510,6 +535,7 @@ Output: `dist/apps/demo-app/`
 ## Migration Notes
 
 If working with legacy code (v0.19 or earlier), note that:
+
 - Binary trees (`first`/`second`) are now n-ary (`children` array)
 - String paths are now numeric paths
 - `splitPercentage` is now `splitPercentages` array
@@ -526,3 +552,17 @@ If working with legacy code (v0.19 or earlier), note that:
 
 Apache License 2.0 - See LICENSE file for details
 Original copyright by Kevin Verdieck and Palantir Technologies, Inc.
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+# General Guidelines for working with Nx
+
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- You have access to the Nx MCP server and its tools, use them to help the user
+- When answering questions about the repository, use the `nx_workspace` tool first to gain an understanding of the workspace architecture where applicable.
+- When working in individual projects, use the `nx_project_details` mcp tool to analyze and understand the specific project structure and dependencies
+- For questions around nx configuration, best practices or if you're unsure, use the `nx_docs` tool to get relevant, up-to-date docs. Always use this instead of assuming things about nx configuration
+- If the user needs help with an Nx configuration or project graph error, use the `nx_workspace` tool to get any errors
+
+<!-- nx configuration end-->

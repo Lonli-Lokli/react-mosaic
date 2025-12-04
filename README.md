@@ -496,14 +496,38 @@ We welcome contributions! Here's how to get started:
 1. **Fork** the repository
 2. **Clone** your fork: `git clone https://github.com/lonli-lokli/react-mosaic.git`
 3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-4. **Install** dependencies: `npm install`
+4. **Install** dependencies: `npm install` (this automatically sets up Git hooks via lefthook)
 5. **Make** your changes
 6. **Add** tests for new functionality
 7. **Run** the test suite: `npm test`
 8. **Lint** your code: `npm run lint`
-9. **Commit** your changes: `git commit -m 'Add amazing feature'`
+9. **Commit** your changes following [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m "feat: add amazing feature"
+   # or
+   git commit -m "fix: resolve bug in component"
+   ```
 10. **Push** to your branch: `git push origin feature/amazing-feature`
 11. **Submit** a pull request
+
+### Commit Message Format
+
+This project enforces **Conventional Commits** for automatic changelog generation. All commits must follow this format:
+
+```
+<type>(<scope>): <subject>
+
+Examples:
+feat: add support for custom toolbar buttons
+fix(drag-drop): prevent memory leak on unmount
+docs: update installation instructions
+```
+
+**Allowed types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+Commit messages are validated by lefthook Git hooks locally and in CI. Invalid commits will be rejected automatically.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ### Code Style
 
@@ -512,14 +536,14 @@ This project uses:
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type checking
+- **lefthook** for Git hooks management
 
 Run these commands to ensure code quality:
 
 ```bash
 npm run lint        # Check linting
-npm run lint:fix    # Fix linting issues
 npm run format      # Format code with Prettier
-npm run type-check  # Check TypeScript types
+npm test            # Run tests
 ```
 
 ### Guidelines
@@ -528,7 +552,7 @@ npm run type-check  # Check TypeScript types
 - Write tests for new features
 - Update documentation as needed
 - Keep pull requests focused and small
-- Use descriptive commit messages
+- Use Conventional Commits format for all commits
 
 ## 🧪 Testing
 
