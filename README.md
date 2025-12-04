@@ -489,46 +489,44 @@ react-mosaic/
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how to get started:
+We welcome contributions! This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated changelog generation and semantic versioning.
 
-### Development Workflow
+### Quick Start
 
 1. **Fork** the repository
 2. **Clone** your fork: `git clone https://github.com/lonli-lokli/react-mosaic.git`
-3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-4. **Install** dependencies: `npm install`
-5. **Make** your changes
-6. **Add** tests for new functionality
-7. **Run** the test suite: `npm test`
-8. **Lint** your code: `npm run lint`
-9. **Commit** your changes: `git commit -m 'Add amazing feature'`
-10. **Push** to your branch: `git push origin feature/amazing-feature`
-11. **Submit** a pull request
+3. **Install** dependencies: `npm install` (this also sets up Git hooks)
+4. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+5. **Make** your changes following our [Contributing Guidelines](CONTRIBUTING.md)
+6. **Commit** using conventional format: `git commit -m 'feat: Add amazing feature'`
+7. **Submit** a pull request
 
-### Code Style
+### Commit Message Format
 
-This project uses:
+All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-- **ESLint** for code linting
-- **Prettier** for code formatting
-- **TypeScript** for type checking
+```
+<type>(<scope>): <subject>
 
-Run these commands to ensure code quality:
+Examples:
+feat: Add support for custom toolbar buttons
+fix(drag-drop): Prevent memory leak on unmount
+docs: Update installation instructions
+```
+
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+This is **enforced** via Git hooks and CI. Non-conforming commits will be rejected.
+
+📖 **Full guidelines:** See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed information.
+
+### Code Quality
 
 ```bash
 npm run lint        # Check linting
-npm run lint:fix    # Fix linting issues
 npm run format      # Format code with Prettier
-npm run type-check  # Check TypeScript types
+npm test            # Run tests
 ```
-
-### Guidelines
-
-- Follow the existing code style
-- Write tests for new features
-- Update documentation as needed
-- Keep pull requests focused and small
-- Use descriptive commit messages
 
 ## 🧪 Testing
 
