@@ -1,0 +1,41 @@
+{
+  "description": "React Mosaic - A React Tiling Window Manager",
+  "projectContext": {
+    "type": "library",
+    "language": "TypeScript",
+    "framework": "React",
+    "buildSystem": "Nx + Vite + tsup",
+    "testFramework": "Vitest",
+    "packageManager": "npm"
+  },
+  "preferences": {
+    "codeStyle": {
+      "quotes": "single",
+      "semi": true,
+      "trailingComma": "all",
+      "tabWidth": 2,
+      "printWidth": 100
+    },
+    "testing": {
+      "framework": "vitest",
+      "coverage": true,
+      "location": "co-located"
+    }
+  },
+  "keyFiles": [
+    "claude.md",
+    "README.md",
+    "libs/react-mosaic-component/src/index.ts",
+    "libs/react-mosaic-component/src/lib/types.ts",
+    "libs/react-mosaic-component/src/lib/contextTypes.ts",
+    "libs/react-mosaic-component/src/lib/util/mosaicUtilities.ts",
+    "libs/react-mosaic-component/src/lib/util/mosaicUpdates.ts"
+  ],
+  "commonTasks": {
+    "start": "npm start",
+    "test": "npm test",
+    "build": "npm run build:lib",
+    "lint": "npm run lint",
+    "format": "npm run format"
+  }
+}

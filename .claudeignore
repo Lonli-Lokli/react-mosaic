@@ -1,0 +1,88 @@
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+.pnp.*
+.yarn/
+
+# Cache directories
+.cache/
+.nx/
+.vite/
+.turbo/
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+*.code-workspace
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Lock files (can be regenerated)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+*.js.map
+*.css.map
+
+# Demo app specific
+apps/demo-app/dist/
+apps/demo-app/.vite/
+
+# Git files
+.git/
+.gitignore
+
+# Documentation (already have claude.md)
+CHANGELOG.md
+CONTRIBUTING.md
+
+# Media files (screenshots, gifs, etc.)
+*.gif
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.ico
+*.webp
+
+# Compiled CSS
+*.css
+!libs/react-mosaic-component/src/lib/styles/*.less
