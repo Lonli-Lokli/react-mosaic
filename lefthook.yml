@@ -1,0 +1,10 @@
+# Lefthook configuration for react-mosaic
+# https://github.com/evilmartians/lefthook
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx commitlint --edit {1}
+      skip:
+        - merge
+        - rebase
