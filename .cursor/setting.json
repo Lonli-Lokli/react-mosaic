@@ -1,0 +1,26 @@
+  {
+    "permissions": {
+      "allow": [
+        "mcp__ide__getDiagnostics",
+        "Bash(npm run build:*)",
+        "Bash(npm install:*)",
+        "Bash(npm run:*)",
+        "Bash(npx eslint:*)",
+        "Bash(npx nx build:*)",
+        "Bash(npx nx test:*)",
+        "Bash(npx nx graph)",
+        "Bash(npx nx show project:*)"
+      ],
+      "deny": [
+        "Read(./.env)",
+        "Read(./.env.*)",
+        "Read(./apps/vinto/.env.*)",
+        "Bash(npx tsc:*)",
+        "Bash(npm run typecheck:*)"
+      ],
+      "ask": []
+    },
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }
