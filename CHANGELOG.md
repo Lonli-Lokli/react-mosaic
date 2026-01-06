@@ -1,3 +1,9 @@
+## 0.21.0 (2026-01-06)
+
+### 🚀 Features
+
+- implement automated changelog generation with lefthook ([3e64ab2](https://github.com/Lonli-Lokli/react-mosaic/commit/3e64ab2))
+
 ## 0.20.0 (2025-12-03)
 
 This was a version bump only, there were no code changes.
