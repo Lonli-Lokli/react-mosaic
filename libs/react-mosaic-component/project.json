@@ -10,9 +10,9 @@
         "packageRoot": "dist/{projectRoot}"
       }
     },
-  "build": {
-    "command": "npm run build:lib"
-  }
+    "build": {
+      "command": "npm run build:lib"
+    }
   },
   "release": {
     "version": {
