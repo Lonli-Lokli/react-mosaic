@@ -17,10 +17,15 @@ import { BoundingBox, boundingBoxAsStyles } from './util/BoundingBox';
 import { MosaicContext, MosaicRootActions } from './contextTypes';
 import { MosaicDragItem, MosaicDropData } from './internalTypes';
 import { updateTree, createDragToUpdates } from './util/mosaicUpdates';
-import { normalizeMosaicTree, getNodeAtPath, isTabsNode } from './util/mosaicUtilities';
+import {
+  normalizeMosaicTree,
+  getNodeAtPath,
+  isTabsNode,
+} from './util/mosaicUtilities';
 import { OptionalBlueprint } from './util/OptionalBlueprint';
 import { DraggableTab } from './DraggableTab';
 import { createDefaultTabsControls } from './buttons/defaultToolbarControls';
+import { TabDragButton } from './buttons/TabDragButton';
 
 export interface MosaicTabsProps<T extends MosaicKey> {
   node: MosaicTabsNode<T>;
@@ -32,6 +37,7 @@ export interface MosaicTabsProps<T extends MosaicKey> {
   renderTabButton?: TabButtonRenderer<T>;
   tabToolbarControls?: React.ReactNode;
   canClose?: TabCanCloseFunction<T>;
+  showTabDragButton?: (path: MosaicPath) => boolean;
 }
 
 // Default tab button using DraggableTab with professional styling
@@ -60,7 +66,6 @@ const DefaultTabButton = <T extends MosaicKey>({
   onTabClose?: (tabKey: T, index: number) => void;
   tabs: T[];
 }) => {
-
   const handleCloseClick = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent tab click
     onTabClose?.(tabKey, index);
@@ -101,9 +106,7 @@ const DefaultTabButton = <T extends MosaicKey>({
                 '-active-tab': isActive,
                 '-inactive-tab': !isActive,
               })}
-              onClick={
-                closeState === 'canClose' ? handleCloseClick : undefined
-              }
+              onClick={closeState === 'canClose' ? handleCloseClick : undefined}
               title={
                 closeState === 'canClose' ? 'Close tab' : 'Cannot close tab'
               }
@@ -201,8 +204,9 @@ export const MosaicTabs = <T extends MosaicKey>({
   boundingBox,
   renderTabTitle,
   renderTabButton,
-  tabToolbarControls = createDefaultTabsControls(path),
+  tabToolbarControls: providedTabToolbarControls,
   canClose,
+  showTabDragButton,
 }: MosaicTabsProps<T>) => {
   const { mosaicActions, mosaicId } = React.useContext<MosaicContext<T>>(
     MosaicContext as any,
@@ -246,7 +250,9 @@ export const MosaicTabs = <T extends MosaicKey>({
           const destinationNode = getNodeAtPath(root, destinationPath);
 
           // If destination is the same tab container
-          return isTabsNode(destinationNode) && isEqual(ownPath, destinationPath);
+          return (
+            isTabsNode(destinationNode) && isEqual(ownPath, destinationPath)
+          );
         })();
 
       const isChildDrop =
@@ -285,6 +291,9 @@ export const MosaicTabs = <T extends MosaicKey>({
     },
   });
 
+  const tabToolbarControls =
+    providedTabToolbarControls ||
+    createDefaultTabsControls(path, connectDragSource);
   // Drop target for the tab content area - blocks individual window drop targets
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, connectDropTarget] = useDrop({
@@ -421,15 +430,15 @@ export const MosaicTabs = <T extends MosaicKey>({
   };
 
   const renderDefaultToolbar = () => {
-    // Allow dragging the entire tab container from the drag handle area
     const isDragAllowed = path.length > 0;
 
-    // Create a draggable handle area (empty space that can be grabbed)
-    const dragHandle = isDragAllowed ? (
-      connectDragSource(
-        <div className="mosaic-tab-drag-handle" title="Drag to move tab container" />
-      )
-    ) : null;
+    // Create a drag button using the same pattern as other toolbar buttons
+    const dragButton =
+      isDragAllowed &&
+      (showTabDragButton ? showTabDragButton(path) : true) &&
+      providedTabToolbarControls !== undefined ? (
+        <TabDragButton connectDragSource={connectDragSource} />
+      ) : null;
 
     return connectTabBarDropTarget(
       <div
@@ -439,7 +448,7 @@ export const MosaicTabs = <T extends MosaicKey>({
           draggable: isDragAllowed,
         })}
       >
-        {/* Left section: scrollable tabs only */}
+        {/* Scrollable tabs section */}
         <div className="mosaic-tab-bar-tabs">
           {/* Drop target at the beginning */}
           <TabDropTarget
@@ -479,7 +488,7 @@ export const MosaicTabs = <T extends MosaicKey>({
           })}
         </div>
 
-        {/* Right section: always visible controls (add button, drag handle, toolbar) */}
+        {/* Always-visible controls: drag, add, toolbar */}
         <div className="mosaic-tab-bar-controls">
           <button
             className="mosaic-tab-add-button"
@@ -489,12 +498,11 @@ export const MosaicTabs = <T extends MosaicKey>({
           >
             +
           </button>
+          {dragButton}
 
-          {/* Draggable handle area */}
-          {dragHandle}
-
-          {/* Toolbar controls */}
-          <div className="mosaic-tab-toolbar-controls">{tabToolbarControls}</div>
+          <div className="mosaic-tab-toolbar-controls">
+            {tabToolbarControls}
+          </div>
         </div>
       </div>,
     );
@@ -517,7 +525,13 @@ export const MosaicTabs = <T extends MosaicKey>({
             >
               <span className="mosaic-tab-button-content">
                 {renderTabTitle
-                  ? renderTabTitle({ tabKey, path, isActive: index === activeTabIndex, index, mosaicId })
+                  ? renderTabTitle({
+                      tabKey,
+                      path,
+                      isActive: index === activeTabIndex,
+                      index,
+                      mosaicId,
+                    })
                   : `Tab ${tabKey}`}
               </span>
             </button>
@@ -545,19 +559,19 @@ export const MosaicTabs = <T extends MosaicKey>({
       {/* Use the custom toolbar renderer if provided, otherwise use our default */}
       {renderTabToolbar
         ? renderTabToolbar({
-          tabs,
-          activeTabIndex,
-          path,
-          DraggableTab: (props) => (
-            <DraggableTab
-              key={props.tabKey}
-              {...props}
-              tabContainerPath={path}
-              mosaicActions={mosaicActions}
-              mosaicId={mosaicId}
-            />
-          ),
-        })
+            tabs,
+            activeTabIndex,
+            path,
+            DraggableTab: (props) => (
+              <DraggableTab
+                key={props.tabKey}
+                {...props}
+                tabContainerPath={path}
+                mosaicActions={mosaicActions}
+                mosaicId={mosaicId}
+              />
+            ),
+          })
         : renderDefaultToolbar()}
 
       {connectDropTarget(

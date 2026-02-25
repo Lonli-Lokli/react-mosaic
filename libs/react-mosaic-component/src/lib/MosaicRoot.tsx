@@ -33,6 +33,8 @@ export interface MosaicRootProps<T extends MosaicKey> {
   renderTabTitle?: TabTitleRenderer<T>;
   renderTabButton?: TabButtonRenderer<T>;
   canClose?: TabCanCloseFunction<T>;
+  showTabDragButton?: (path: MosaicPath) => boolean;
+  tabToolbarControls?: React.ReactNode;
 }
 
 export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<
@@ -127,6 +129,8 @@ export class MosaicRoot<T extends MosaicKey> extends React.PureComponent<
             boundingBox={boundingBox}
             renderTabTitle={this.props.renderTabTitle}
             renderTabButton={this.props.renderTabButton}
+            showTabDragButton={this.props.showTabDragButton}
+            tabToolbarControls={this.props.tabToolbarControls}
             canClose={this.props.canClose}
           />
         );

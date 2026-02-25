@@ -162,67 +162,41 @@
     align-items: center;
     gap: 4px;
     flex: 1;
-    min-width: 0; // Allow flex shrinking
-    overflow-x: hidden; // Hide scrollbar by default
+    min-width: 0; // Allow flex shrinking below content size
+    overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; // Enable smooth momentum scrolling on iOS
 
-    &:hover {
-      overflow-x: auto; // Show scrollbar on hover
-    }
-
-    // Style scrollbar for webkit browsers (Chrome, Safari, Edge)
+    // Thin scrollbar for webkit browsers
     &::-webkit-scrollbar {
-      height: 8px;
+      height: 4px;
     }
-
     &::-webkit-scrollbar-track {
       background: transparent;
     }
-
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.5);
-      }
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 2px;
     }
 
     // Firefox scrollbar styling
     scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-
-    &:hover {
-      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
-    }
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
 
   .mosaic-tab-bar-controls {
     display: flex;
     align-items: center;
     gap: 4px;
-    flex-shrink: 0; // Don't shrink the controls
+    flex-shrink: 0; // Never shrink controls
   }
 
-  .mosaic-tab-drag-handle {
-    flex: 1;
-    min-width: 20px;
-    height: 100%;
-    cursor: move;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.15s ease;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
+  .mosaic-tab-drag-button {
+    cursor: grab;
+    flex-shrink: 0;
 
     &:active {
-      background-color: rgba(0, 0, 0, 0.1);
+      cursor: grabbing;
     }
   }
 

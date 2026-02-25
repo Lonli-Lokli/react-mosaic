@@ -20,4 +20,4 @@ export const findFirstLeafPath = (
 };
 
 // Create new node with timestamp
-export const createNode = () => Date.now();
+export const createNode = () => Date.now().toString();

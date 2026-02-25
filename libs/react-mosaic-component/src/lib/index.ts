@@ -89,6 +89,7 @@ export { AddTabButton } from './buttons/AddTabButton';
 export { TabSplitButton } from './buttons/TabSplitButton';
 export { TabRemoveButton } from './buttons/TabRemoveButton';
 export { TabExpandButton } from './buttons/TabExpandButton';
+export { TabDragButton } from './buttons/TabDragButton';
 export { DraggableTab, type DraggableTabProps } from './DraggableTab';
 export {
   DEFAULT_PANEL_CONTROLS_IN_TABS as DEFAULT_CONTROLS_IN_TABS,

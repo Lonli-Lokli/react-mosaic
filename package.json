@@ -27,7 +27,7 @@
     "clean": "shx rm -rf ./dist/libs/react-mosaic-component/",
     "copy": "shx cp ./libs/react-mosaic-component/package.json ./dist/libs/react-mosaic-component/package.json && shx cp README.md ./dist/libs/react-mosaic-component/README.md && shx cp LICENSE ./dist/libs/react-mosaic-component/LICENSE",
     "prepare": "lefthook install",
-    "release": "npm run lint && npm run test && nx release --skip-publish"
+    "release": "npm run lint && npm run test && nx release --verbose --skip-publish"
   },
   "dependencies": {
     "classnames": "^2.5.1",

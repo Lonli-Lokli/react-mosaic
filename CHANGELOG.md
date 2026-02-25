@@ -1,3 +1,14 @@
+## 0.22.0 (2026-02-25)
+
+### 🚀 Features
+
+- update nx packages ([8217e47](https://github.com/Lonli-Lokli/react-mosaic/commit/8217e47))
+- update package-lock.json for PR preview deployments ([#9](https://github.com/Lonli-Lokli/react-mosaic/pull/9))
+
+### ❤️ Thank You
+
+- Lonli-Lokli @Lonli-Lokli
+
 ## 0.21.0 (2026-01-06)
 
 ### 🚀 Features

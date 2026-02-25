@@ -44,17 +44,21 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
       direction: 'row',
       splitPercentages: [40, 60], // Replaces `splitPercentage`
       children: [
-        1,
+        '1',
         {
           type: 'split',
           direction: 'column',
           splitPercentages: [50, 50],
-          children: [2, 3],
+          children: ['2', '3'],
         },
       ],
     },
     currentTheme: 'Blueprint',
-    editableTitles: {},
+    editableTitles: {
+      1: 'Panel 1',
+      2: 'Panel 2',
+      3: 'Panel 3',
+    },
     dragInProgress: false,
     dragOverPath: null,
   };
@@ -64,14 +68,14 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
       <React.StrictMode>
         <div className="react-mosaic-example-app">
           {this.renderNavBar()}
-          <Mosaic<number>
+          <Mosaic<string>
             // The `path` passed to renderTile is now MosaicPath (number[])
-            renderTile={(count, path) => (
+            renderTile={(tileId, path) => (
               <ExampleWindow
-                count={count}
+                panelId={tileId}
                 path={path}
                 onUpdateTitle={this.updateTitle}
-                editableTitle={this.state.editableTitles[count]}
+                editableTitle={this.state.editableTitles[tileId]}
                 dragInProgress={this.state.dragInProgress}
                 onDragStart={this.onDragStart}
                 onDragEnd={this.onDragEnd}
@@ -99,10 +103,10 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
               // - Tab 2 has no close button
               // - Other tabs can be closed normally
               // - If only one tab remains, it cannot be closed
-              if (tabKey === 1) {
+              if (tabKey === '1') {
                 return 'cannotClose'; // Protected tab
               }
-              if (tabKey === 2) {
+              if (tabKey === '2') {
                 return 'noClose'; // No close button
               }
               if (tabs.length <= 1) {
@@ -117,12 +121,12 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
     );
   }
 
-  private onChange = (currentNode: MosaicNode<number> | null) => {
+  private onChange = (currentNode: MosaicNode<string> | null) => {
     this.setState({ currentNode });
     console.log('Mosaic.onChange', currentNode);
   };
 
-  private onRelease = (currentNode: MosaicNode<number> | null) => {
+  private onRelease = (currentNode: MosaicNode<string> | null) => {
     console.log('Mosaic.onRelease():', currentNode);
   };
 
@@ -137,7 +141,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
   private addWindow = () => {
     const { currentNode } = this.state;
     const totalWindowCount = getLeaves(currentNode).length;
-    const newWindow = totalWindowCount + 1;
+    const newWindow = (totalWindowCount + 1).toString();
 
     if (!currentNode) {
       this.setState({ currentNode: newWindow });
@@ -163,7 +167,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
           direction: 'row',
           splitPercentages: [50, 50],
           children: [currentNode, newWindow],
-        } as MosaicSplitNode<number>,
+        } as MosaicSplitNode<string>,
       };
     }
 
@@ -172,7 +176,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
   };
 
   // Handle editable titles
-  private updateTitle = (panelId: number, newTitle: string) => {
+  private updateTitle = (panelId: string, newTitle: string) => {
     this.setState({
       editableTitles: {
         ...this.state.editableTitles,

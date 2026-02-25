@@ -22,7 +22,7 @@ export const DefaultToolbarButton = ({
       onClick={onClick}
       className={classNames(
         'mosaic-default-control',
-        OptionalBlueprint.getClasses(blueprintNamespace, 'BUTTON', 'MINIMAL'),
+        OptionalBlueprint.getClasses(blueprintNamespace, 'BUTTON', 'MINIMAL', 'SMALL'),
         className,
       )}
     >

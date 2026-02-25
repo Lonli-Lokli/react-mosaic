@@ -11,17 +11,17 @@ import { ExampleWindowProps } from '../types/demo-types';
 const EMPTY_ARRAY: any[] = [];
 const createNode = () => Date.now();
 
-export const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
+export const ExampleWindow = ({ panelId, path }: ExampleWindowProps) => {
   return (
     <MosaicWindow<number>
-      additionalControls={count === 3 ? [] : EMPTY_ARRAY}
-      title={`Panel ${count}`}
+      additionalControls={panelId === '3' ? [] : EMPTY_ARRAY}
+      title={`Panel ${panelId}`}
       createNode={createNode}
       path={path}
       onDragStart={() => console.log('MosaicWindow.onDragStart')}
       onDragEnd={(type) => console.log('MosaicWindow.onDragEnd', type)}
       renderToolbar={
-        count === 2
+        panelId === '2'
           ? () => (
               <div className="toolbar-example">
                 <MosaicWindowContext.Consumer key="split">
@@ -57,7 +57,7 @@ export const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
       >
         <h1
           style={{ margin: '0 0 16px 0' }}
-        >{`Panel ${count} - Data Table`}</h1>
+        >{`Panel ${panelId} - Data Table`}</h1>
 
         <div style={{ overflow: 'auto', width: '100%' }}>
           <table
@@ -158,7 +158,7 @@ export const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
             </thead>
             <tbody>
               {Array.from({ length: 100 }, (_, index) => {
-                const id = index + 1 + count * 100;
+                const id = index + 1 + parseInt(panelId) * 100;
                 const departments = [
                   'Engineering',
                   'Marketing',
@@ -205,7 +205,7 @@ export const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
                         padding: '10px 8px',
                       }}
                     >
-                      {`User ${id} Panel${count}`}
+                      {`User ${id} Panel${panelId}`}
                     </td>
                     <td
                       style={{
@@ -237,7 +237,7 @@ export const ExampleWindow = ({ count, path }: ExampleWindowProps) => {
                         padding: '10px 8px',
                       }}
                     >
-                      ${(50000 + index * 1000 + count * 5000).toLocaleString()}
+                      ${(50000 + index * 1000 + parseInt(panelId) * 5000).toLocaleString()}
                     </td>
                     <td
                       style={{
