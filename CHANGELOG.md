@@ -1,3 +1,13 @@
+## 0.24.0 (2026-02-26)
+
+### 🚀 Features
+
+- update nx ([02e832e](https://github.com/Lonli-Lokli/react-mosaic/commit/02e832e))
+
+### ❤️ Thank You
+
+- Lonli-Lokli @Lonli-Lokli
+
 ## 0.22.0 (2026-02-25)
 
 ### 🚀 Features
