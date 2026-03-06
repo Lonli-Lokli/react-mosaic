@@ -1,6 +1,6 @@
 {
-  "name": "@lonli-lokli/react-mosaic-component",
-  "version": "0.24.0",
+  "name": "react-mosaic-component",
+  "version": "7.0.0",
   "description": "A React Tiling Window Manager",
   "main": "./index.mjs",
   "type": "module",
@@ -18,7 +18,7 @@
   "style": "./react-mosaic-component.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lonli-lokli/react-mosaic.git"
+    "url": "https://github.com/nomcopter/react-mosaic.git"
   },
   "sideEffects": [
     "*.css"

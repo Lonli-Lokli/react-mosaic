@@ -14,10 +14,10 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@lonli-lokli/react-mosaic-component": [
+      "react-mosaic-component": [
         "libs/react-mosaic-component/src/index.ts"
       ],
-      "@lonli-lokli/react-mosaic-component/styles": [
+      "react-mosaic-component/styles": [
         "libs/react-mosaic-component/src/lib/styles/index.less"
       ]
     }

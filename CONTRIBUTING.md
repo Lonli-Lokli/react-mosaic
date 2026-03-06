@@ -210,8 +210,8 @@ This is why following Conventional Commits is **mandatory** - it enables this au
 
 ## Need Help?
 
-- **Issues**: [GitHub Issues](https://github.com/lonli-lokli/react-mosaic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/lonli-lokli/react-mosaic/discussions)
+- **Issues**: [GitHub Issues](https://github.com/nomcopter/react-mosaic/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/nomcopter/react-mosaic/discussions)
 
 ## License
 

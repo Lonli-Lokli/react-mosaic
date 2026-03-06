@@ -1,4 +1,4 @@
-import { MosaicNode, MosaicPath } from '@lonli-lokli/react-mosaic-component';
+import { MosaicNode, MosaicPath } from 'react-mosaic-component';
 
 export interface DemoAppState {
   currentNode: MosaicNode<string> | null;

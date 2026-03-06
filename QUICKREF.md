@@ -72,7 +72,7 @@ T  // Just the panel ID (string or number)
 ### Type Guards
 
 ```typescript
-import { isSplitNode, isTabsNode } from '@lonli-lokli/react-mosaic-component';
+import { isSplitNode, isTabsNode } from 'react-mosaic-component';
 
 if (isSplitNode(node)) {
   // node is MosaicSplitNode<T>
@@ -91,7 +91,7 @@ import {
   getNodeAtPath,
   createBalancedTreeFromLeaves,
   convertLegacyToNary
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 
 // Get all leaf panel IDs
 const panels = getLeaves(tree);
@@ -114,7 +114,7 @@ import {
   createRemoveUpdate,
   createExpandUpdate,
   createHideUpdate
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 
 // Remove node at path
 const newTree = updateTree(tree, [
@@ -145,7 +145,7 @@ import { useContext } from 'react';
 import {
   MosaicContext,
   MosaicWindowContext
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 
 // In root descendants
 const { mosaicActions } = useContext(MosaicContext);
@@ -315,7 +315,7 @@ function processNode<T>(node: MosaicNode<T>): void {
 ```tsx
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
-import '@lonli-lokli/react-mosaic-component/react-mosaic-component.css';
+import 'react-mosaic-component/react-mosaic-component.css';
 
 <Mosaic
   className="mosaic-blueprint-theme"
@@ -360,7 +360,7 @@ const [tree, setTree] = useState<MosaicNode<string>>(initialTree);
 ### Custom Toolbar
 
 ```tsx
-import { RemoveButton, SplitButton } from '@lonli-lokli/react-mosaic-component';
+import { RemoveButton, SplitButton } from 'react-mosaic-component';
 
 const controls = (
   <>
@@ -472,9 +472,9 @@ const modernTree = convertLegacyToNary(legacyTree);
 
 ## Useful Links
 
-- [GitHub Repo](https://github.com/lonli-lokli/react-mosaic)
-- [Live Demo](https://lonli-lokli.github.io/react-mosaic/)
-- [NPM Package](https://www.npmjs.com/package/@lonli-lokli/react-mosaic-component)
+- [GitHub Repo](https://github.com/nomcopter/react-mosaic)
+- [Live Demo](https://nomcopter.github.io/react-mosaic/)
+- [NPM Package](https://www.npmjs.com/package/react-mosaic-component)
 - [Full Documentation](./claude.md)
 - [AI Contributing Guide](./CONTRIBUTING_AI.md)
 - [Main README](./README.md)

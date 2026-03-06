@@ -1,5 +1,5 @@
 import { Classes } from '@blueprintjs/core';
-import { MosaicWindowContext } from '@lonli-lokli/react-mosaic-component';
+import { MosaicWindowContext } from 'react-mosaic-component';
 import classNames from 'classnames';
 import React from 'react';
 

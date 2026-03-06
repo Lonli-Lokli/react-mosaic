@@ -136,7 +136,7 @@ Prompt templates help maintain consistency:
 
 ### Tree Manipulation
 ```typescript
-import { updateTree, createRemoveUpdate } from '@lonli-lokli/react-mosaic-component';
+import { updateTree, createRemoveUpdate } from 'react-mosaic-component';
 
 const newTree = updateTree(currentTree, [
   createRemoveUpdate(path)
@@ -145,7 +145,7 @@ const newTree = updateTree(currentTree, [
 
 ### Type Checking
 ```typescript
-import { isSplitNode, isTabsNode } from '@lonli-lokli/react-mosaic-component';
+import { isSplitNode, isTabsNode } from 'react-mosaic-component';
 
 if (isSplitNode(node)) {
   // node is MosaicSplitNode<T>
@@ -155,7 +155,7 @@ if (isSplitNode(node)) {
 ### Context Access
 ```typescript
 import { useContext } from 'react';
-import { MosaicContext } from '@lonli-lokli/react-mosaic-component';
+import { MosaicContext } from 'react-mosaic-component';
 
 const { mosaicActions } = useContext(MosaicContext);
 mosaicActions.remove(path);
@@ -167,8 +167,8 @@ mosaicActions.remove(path);
 - **Quick Reference**: `../QUICKREF.md`
 - **AI Guidelines**: `../CONTRIBUTING_AI.md`
 - **User Documentation**: `../README.md`
-- **Live Demo**: https://lonli-lokli.github.io/react-mosaic/
-- **GitHub**: https://github.com/lonli-lokli/react-mosaic
+- **Live Demo**: https://nomcopter.github.io/react-mosaic/
+- **GitHub**: https://github.com/nomcopter/react-mosaic
 
 ## Contributing
 

@@ -6,7 +6,7 @@
 
 **Key Information:**
 
-- **Package**: `@lonli-lokli/react-mosaic-component`
+- **Package**: `react-mosaic-component`
 - **Version**: 0.20.0
 - **License**: Apache License 2.0
 - **React Support**: React 16-19
@@ -521,10 +521,10 @@ Output: `dist/apps/demo-app/`
 
 ## Additional Resources
 
-- **GitHub Repository**: https://github.com/lonli-lokli/react-mosaic
-- **Live Demo**: https://lonli-lokli.github.io/react-mosaic/
-- **NPM Package**: https://www.npmjs.com/package/@lonli-lokli/react-mosaic-component
-- **Issue Tracker**: https://github.com/lonli-lokli/react-mosaic/issues
+- **GitHub Repository**: https://github.com/nomcoptereact-mosaic
+- **Live Demo**: https://nomcopterithub.io/react-mosaic/
+- **NPM Package**: https://www.npmjs.com/package/react-mosaic-component
+- **Issue Tracker**: https://github.com/nomcopter/react-mosaic/issues
 
 ## Version History
 

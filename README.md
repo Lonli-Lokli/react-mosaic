@@ -1,4 +1,4 @@
-[![NPM Version](https://img.shields.io/npm/v/react-mosaic-component.svg)](https://www.npmjs.com/package/@lonli-lokli/react-mosaic-component)
+[![NPM Version](https://img.shields.io/npm/v/react-mosaic-component.svg)](https://www.npmjs.com/package/react-mosaic-component)
 [![React](https://img.shields.io/badge/React-16%20%7C%2017%20%7C%2018%20%7C%2019-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
@@ -13,7 +13,7 @@ React Mosaic is a full-featured React component library that provides complete c
 
 </p>
 
-**🚀 [Live Demo](https://lonli-lokli.github.io/react-mosaic/) | [Documentation](https://github.com/lonli-lokli/react-mosaic)**
+**🚀 [Live Demo](https://nomcopter.github.io/react-mosaic/) | [Documentation](https://github.com/nomcopter/react-mosaic)**
 
 ## ✨ Features
 
@@ -36,27 +36,27 @@ React Mosaic is a full-featured React component library that provides complete c
 
 ```bash
 # Using npm
-npm install @lonli-lokli/react-mosaic-component
+npm install react-mosaic-component
 
 # Using yarn
-yarn add @lonli-lokli/react-mosaic-component
+yarn add react-mosaic-component
 
 # Using pnpm
-pnpm add @lonli-lokli/react-mosaic-component
+pnpm add react-mosaic-component
 ```
 
 ### Basic Setup
 
 1. Install the package
-2. Import the CSS file: `import '@lonli-lokli/react-mosaic-component/react-mosaic-component.css'`
+2. Import the CSS file: `import 'react-mosaic-component/react-mosaic-component.css'`
 3. (Optional) Install Blueprint for theming: `npm install @blueprintjs/core @blueprintjs/icons`
 
 ### Simple Example
 
 ```tsx
 import React from 'react';
-import { Mosaic, MosaicWindow } from '@lonli-lokli/react-mosaic-component';
-import '@lonli-lokli/react-mosaic-component/react-mosaic-component.css';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import 'react-mosaic-component/react-mosaic-component.css';
 
 // Optional: Add Blueprint theme
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -265,7 +265,7 @@ Create your own themes by styling the CSS classes:
 
 ```tsx
 import React, { useState } from 'react';
-import { Mosaic, MosaicNode } from '@lonli-lokli/react-mosaic-component';
+import { Mosaic, MosaicNode } from 'react-mosaic-component';
 
 const ControlledExample = () => {
   const [currentNode, setCurrentNode] = useState<MosaicNode<string> | null>({
@@ -395,7 +395,7 @@ import {
   createRemoveUpdate,
   createExpandUpdate,
   getNodeAtPath,
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 
 // Get all leaf nodes (panel IDs)
 const leaves = getLeaves(currentTree);
@@ -422,7 +422,7 @@ Access Mosaic's context in child components:
 
 ```tsx
 import { useContext } from 'react';
-import { MosaicWindowContext } from '@lonli-lokli/react-mosaic-component';
+import { MosaicWindowContext } from 'react-mosaic-component';
 
 const MyCustomComponent = () => {
   const { mosaicActions, mosaicWindowActions } =
@@ -458,7 +458,7 @@ const MyCustomComponent = () => {
 
 ```bash
 # Clone the repository
-git clone https://github.com/lonli-lokli/react-mosaic.git
+git clone https://github.com/nomcopter/react-mosaic.git
 cd react-mosaic
 
 # Install dependencies
@@ -494,7 +494,7 @@ We welcome contributions! Here's how to get started:
 ### Development Workflow
 
 1. **Fork** the repository
-2. **Clone** your fork: `git clone https://github.com/lonli-lokli/react-mosaic.git`
+2. **Clone** your fork: `git clone https://github.com/nomcopter/react-mosaic.git`
 3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
 4. **Install** dependencies: `npm install` (this automatically sets up Git hooks via lefthook)
 5. **Make** your changes
@@ -608,7 +608,7 @@ npm run deploy
 
 ## 📋 Migration Guide
 
-### From `react-mosaic-component` to `@lonli-lokli/react-mosaic-component`
+### From `react-mosaic-component` to `react-mosaic-component`
 
 Version 1 introduces significant changes with n-ary tree support:
 
@@ -644,7 +644,7 @@ import {
   isSplitNode,
   isTabsNode,
   convertLegacyToNary  // ✅ Migration utility
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 ```
 
 **Migration Steps:**
@@ -660,7 +660,7 @@ if ('first' in node && 'second' in node) {
 }
 
 // NEW: Use helper functions
-import { isSplitNode, isTabsNode } from '@lonli-lokli/react-mosaic-component';
+import { isSplitNode, isTabsNode } from 'react-mosaic-component';
 
 if (isSplitNode(node)) {
   // Handle split node with multiple children
@@ -693,7 +693,7 @@ const childPath = [...parentPath, 0]; // First child
 3. **Use Migration Utility for Existing Data:**
 
 ```typescript
-import { convertLegacyToNary } from '@lonli-lokli/react-mosaic-component';
+import { convertLegacyToNary } from 'react-mosaic-component';
 
 // Convert old tree structure to new format
 const legacyTree = {
@@ -754,7 +754,7 @@ import {
   isTabsNode,
   getNodeAtPath,
   getLeaves
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 
 // Type-safe tree traversal
 function processNode<T>(node: MosaicNode<T>, path: number[] = []): void {
@@ -810,8 +810,8 @@ A: No hard limit, but performance may degrade with very large numbers of panels 
 
 ## 🆘 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/lonli-lokli/react-mosaic/issues)
-- **Discussions**: [Ask questions and share ideas](https://github.com/lonli-lokli/react-mosaic/discussions)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/nomcopter/react-mosaic/issues)
+- **Discussions**: [Ask questions and share ideas](https://github.com/nomcopter/react-mosaic/discussions)
 - **Stack Overflow**: Use the `react-mosaic` tag
 
 ## 📄 License

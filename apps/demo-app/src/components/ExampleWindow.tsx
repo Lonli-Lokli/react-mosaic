@@ -5,7 +5,7 @@ import {
   MosaicWindowContext,
   AddTabButton,
   RemoveButton,
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 import { ExampleWindowProps } from '../types/demo-types';
 
 const EMPTY_ARRAY: any[] = [];

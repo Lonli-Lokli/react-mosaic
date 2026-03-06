@@ -18,7 +18,7 @@ import {
   MosaicPath,
   MosaicSplitNode,
   MosaicZeroState,
-} from '@lonli-lokli/react-mosaic-component';
+} from 'react-mosaic-component';
 import { CloseAdditionalControlsButton } from './toolbars';
 
 // Import extracted components and types
@@ -203,7 +203,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
       <div className={classNames(Classes.NAVBAR, Classes.DARK)}>
         <div className={Classes.NAVBAR_GROUP}>
           <div className={Classes.NAVBAR_HEADING}>
-            <a href="https://github.com/lonli-lokli/react-mosaic">
+            <a href="https://github.com/nomcopter/react-mosaic">
               react-mosaic <span className="version">v{version}</span>
             </a>
           </div>
@@ -252,7 +252,7 @@ export class DemoApp extends React.PureComponent<object, DemoAppState> {
           </button>
           <a
             className="github-link"
-            href="https://github.com/lonli-lokli/react-mosaic"
+            href="https://github.com/nomcopter/react-mosaic"
           >
             <img title="Github Link" src="./GitHub-Mark-Light-32px.png" />
           </a>

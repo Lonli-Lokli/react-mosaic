@@ -1,4 +1,4 @@
-import { MosaicNode, MosaicPath } from '@lonli-lokli/react-mosaic-component';
+import { MosaicNode, MosaicPath } from 'react-mosaic-component';
 
 // Helper to find the path to the first leaf node in the tree
 export const findFirstLeafPath = (
