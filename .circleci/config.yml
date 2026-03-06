@@ -1,86 +1,82 @@
-version: 2
+version: 2.1
 
-references:
-  js_deps_cache_key: &js_deps_cache_key v1-dependencies-{{ checksum "yarn.lock" }}
-  workspace_root: &workspace_root .
-  attach_workspace: &attach_workspace
-    attach_workspace:
-      at: *workspace_root
+orbs:
+  node: circleci/node@7.2.1
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:gallium
-    working_directory: ~/react-mosaic
+    executor:
+      name: node/default
+      tag: '22'
+      resource_class: large
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
+          with-cache: true
       - run:
-          name: Install Yarn
-          command: |
-            curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.22.18
-            export PATH="$HOME/.yarn/bin:$PATH"
-      - restore_cache:
-          keys:
-            - *js_deps_cache_key
-      - run: yarn install --frozen-lockfile
-      - save_cache:
-          paths:
-            - node_modules
-            - ~/.cache/yarn
-          key: *js_deps_cache_key
-      - run:
-          name: Build
-          command: yarn build
+          name: Build library and demo app
+          command: npm run build:lib && npm run build:app
       - persist_to_workspace:
-          root: *workspace_root
+          root: .
           paths:
-            - .
+            - dist
+            - node_modules
+
   test:
-    docker:
-      - image: circleci/node:dubnium
-    working_directory: ~/react-mosaic
+    executor:
+      name: node/default
+      tag: '22'
+      resource_class: large
     steps:
-      - *attach_workspace
-      - run: mkdir reports
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+          with-cache: true
       - run:
-          name: Run unit tests
-          command: yarn test:unit --reporter mocha-junit-reporter --reporter-options mochaFile=reports/mocha/test-results.xml
+          name: Run linting
+          command: npm run lint
       - run:
-          name: Lint
-          command: yarn test:lint --format junit -o ./reports/tslint/tslint.xml
-      - store_test_results:
-          path: reports
-      - store_artifacts:
-          path: ./reports/mocha/test-results.xml
-      - store_artifacts:
-          path: ./reports/tslint/tslint.xml
-  deploy:
-    docker:
-      - image: circleci/node:dubnium
-    working_directory: ~/react-mosaic
+          name: Run tests
+          command: npm test
+
+  publish:
+    executor:
+      name: node/default
+      tag: '22'
+      resource_class: medium
     steps:
-      - *attach_workspace
+      - checkout
+      - attach_workspace:
+          at: .
       - run:
-          name: Publish
-          command: |
-            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-            npm publish
+          name: Authenticate with NPM registry
+          command: npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+      - run:
+          name: Publish to NPM
+          command: npm publish dist/libs/react-mosaic-component/
+
 workflows:
-  version: 2
-  build-test-deploy:
+  version: 2.1
+  build-test-publish:
     jobs:
       - build:
           filters:
             tags:
               only: /^v.*/
       - test:
-          requires:
-            - build
           filters:
             tags:
               only: /^v.*/
-      - deploy:
+      - publish:
           requires:
+            - build
             - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
           filters:
             tags:
               only: /^v.*/

@@ -110,5 +110,8 @@
   },
   "peerDependencies": {
     "react": "16 - 19"
+  },
+  "engines": {
+    "node": ">=22.22.0"
   }
 }
