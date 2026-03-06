@@ -521,8 +521,8 @@ Output: `dist/apps/demo-app/`
 
 ## Additional Resources
 
-- **GitHub Repository**: https://github.com/nomcoptereact-mosaic
-- **Live Demo**: https://nomcopterithub.io/react-mosaic/
+- **GitHub Repository**: https://github.com/nomcopter/react-mosaic
+- **Live Demo**: https://nomcopter.github.io/react-mosaic/
 - **NPM Package**: https://www.npmjs.com/package/react-mosaic-component
 - **Issue Tracker**: https://github.com/nomcopter/react-mosaic/issues
 
