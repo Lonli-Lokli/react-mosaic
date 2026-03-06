@@ -7,7 +7,7 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '22'
+      tag: '22.22.1'
       resource_class: large
     steps:
       - checkout
@@ -26,7 +26,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '22'
+      tag: '22.22.1'
       resource_class: large
     steps:
       - checkout
@@ -43,7 +43,7 @@ jobs:
   publish:
     executor:
       name: node/default
-      tag: '22'
+      tag: '22.22.1'
       resource_class: medium
     steps:
       - checkout
